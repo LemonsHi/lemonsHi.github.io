@@ -10,7 +10,7 @@
   
   <title>
     
-      wu-note
+      Tags | wu-note
     
   </title>
   <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
@@ -144,40 +144,29 @@
 </header>
 
     <div id="article-banner">
-  <h2>Archives</h2>
-  <p class="post-date">Archives</p>
+  <h2>Tags</h2>
+  <p class="post-date">Tag Retrieval</p>
 </div>
-<main class="app-body" id="archives">
-  
-  
-  
-    <section class="time-section">
-  <h1 class="section-year">
-    2024
-  </h1>
-  <div class="section-list">
-    
-    
-      <div class="section-list-item">
-        <a href="/newpapername/" class="archive-title">newpapername</a>
-        <p class="archive-date">03-29</p>
-      </div>
-    
-      <div class="section-list-item">
-        <a href="/hello-world/" class="archive-title">Hello World</a>
-        <p class="archive-date">03-29</p>
-      </div>
+<main class="app-body">
+  <div id="tag-cloud">
     
   </div>
-</section>
   
 </main>
 
 <script>
   (function () {
-    var url = 'https://lemonshi.github.io/archives/2024/index.html';
-    $('#article-banner').geopattern(url);
-    $('.header').removeClass('fixed-header');
+    var url = 'https://lemonshi.github.io/tags/index.html'
+    $('#article-banner').geopattern(url)
+    $('.header').removeClass('fixed-header')
+
+    var tag = location.hash.replace('#', '')
+    if (tag) {
+      var tagId = "#tag-" + tag;
+      $("html, body").animate({
+        scrollTop: $(tagId).offset().top 
+      }, 400)
+    }
   })();
 </script>
     <div class="scroll-top">
