@@ -1039,6 +1039,9 @@ h2.article-head {
 .catalog-container .toc-main li {
   list-style-type: none;
   line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .nav-container {
   width: 100%;
