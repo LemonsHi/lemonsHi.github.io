@@ -69,11 +69,9 @@ function listenToAllSupportedEvents(rootContainerElement) {
 > - 通过 `listenToNativeEvent` 来绑定浏览器事件，且绑定在 `rootContainerElement` 根节点。
 > - 如果是支持冒泡的事件，则捕获阶段和冒泡阶段都绑定事件；不支持冒泡的事件，则只绑定捕获阶段的事件。
 >   - allNativeEvents：是一个 Set 集合，保存了 80 个浏览器原生 DOM 事件。
->     - `allNativeEvents: Set<DOMEventName> = new Set(); `
->       ![](../images/react-event-7.webp)
+>     - `allNativeEvents: Set<DOMEventName> = new Set(); ` > ![](../images/react-event-7.webp)
 >   - nonDelegatedEvents：Set 集合，保存浏览器原生事件中不会冒泡的事件，如 load，scroll，媒体事件 canplay，play 等等。
->     - `nonDelegatedEvents: Set<DOMEventName> = new Set([ 'cancel', 'close', ..., ...mediaEventTypes ]);`
->       ![](../images/react-event-8.webp)
+>     - `nonDelegatedEvents: Set<DOMEventName> = new Set([ 'cancel', 'close', ..., ...mediaEventTypes ]);` > ![](../images/react-event-8.webp)
 
 ### 1.2 listenToNativeEvent
 
@@ -234,6 +232,16 @@ function dispatchEvent(
   )
 }
 ```
+
+`dispatchEvent` 函数是 React 事件体系中最关键的函数, 其调用链路较长, 核心步骤如图所示:
+
+![](../images/react-event-9.png)
+
+> **重点关注其中 3 个核心环节:**
+>
+> - attemptToDispatchEvent
+> - SimpleEventPlugin.extractEvents
+> - processDispatchQueue
 
 ### 2.1 attemptToDispatchEvent
 
