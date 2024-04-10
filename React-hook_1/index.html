@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="wu-note">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      React Hook（1） | wu-note
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+  
+  
+<meta name="generator" content="Hexo 7.1.1"></head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>wu-note</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+    
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>React Hook（1）</h2>
+  <p class="post-date">2024-04-01</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="1-背景"><a href="#1-背景" class="headerlink" title="1. 背景"></a>1. 背景</h2><h3 id="1-1-什么需要-Hook？"><a href="#1-1-什么需要-Hook？" class="headerlink" title="1.1 什么需要 Hook？"></a>1.1 什么需要 Hook？</h3><ul>
+<li><strong>组件间的状态难以复用：</strong> 在 hook 出现之前的状态复用有 Mixins、props 和 HOC（高阶组件）。其中，props、HOC（高阶组件）虽然能解决状态复用问题，但是组件会形成“嵌套地狱”。而 Minxins 存在以下问题：可能会相互依赖，相互耦合，不利于代码维护；不同的 Mixins 中的方法可能会相互冲突；Mixins 非常多时，组件是可以感知到的，甚至还要为其做相关处理，这样会给代码造成滚雪球的复杂性。</li>
+<li><strong>复杂组件难以理解：</strong> classComponent 的生命周期中充斥各种状态逻辑和副作用，变成了“面向生命周期变成”。</li>
+<li><strong>难以理解的 class：</strong> 除了代码复用和代码管理会遇到困难外，class 是学习 React 的一大屏障，必须去理解 JavaScript 中  this  的工作方式，这与其他语言存在巨大差异。还不能忘记绑定事件处理器。如果不使用  ES2022 public class fields，这些代码非常冗余。此外，class 也给目前的工具带来了一些问题，例如，组件预编译技术会在 class 中遇到优化失效的 case；class 不能很好的压缩；class 在热重载会出现不稳定的情况。</li>
+</ul>
+<h3 id="1-2-hook-是什么？"><a href="#1-2-hook-是什么？" class="headerlink" title="1.2 hook 是什么？"></a>1.2 hook 是什么？</h3><p>React 的特征是 UI&#x3D;f(data)，一切皆组件、声明式编程。那么，既然是 UI&#x3D;f(data)，data（数据）通过 function 来驱动 UI 视图变化。在业务中，你不能简单只展示，也需交互，交互就会更新状态，React 是通过 setState 来改变状态。但这仅限于类组件，所以在 Hooks 出现之前，函数式组件用来渲染组件（也称它为木偶组件），类组件用来控制状态。</p>
+<p>React Hooks 是 React 16.8 推出的新特性。它可以让你在不编写 class 的情况下使用 state 以及其他的 React 特性</p>
+<p>Hook 主要是为了解决以下问题：</p>
+<ul>
+<li>无 class 的复杂性；</li>
+<li>无生命周期的困扰；</li>
+<li>优雅复用；</li>
+<li>对齐 class 组件已经具备的能力。</li>
+</ul>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://zh-hans.legacy.reactjs.org/docs/hooks-faq.html#are-hooks-slow-because-of-creating-functions-in-render">Hook 会因为在渲染时创建函数而变慢吗？</a><br>不会。在现代浏览器中，闭包和类的原始性能只有在极端场景下才会有明显的差别。<br>除此之外，可以认为 Hook 的设计在某些方面更加高效：</p>
+<ul>
+<li>Hook 避免了 class 需要的额外开支，像是创建类实例和在构造函数中绑定事件处理器的成本。</li>
+<li>符合语言习惯的代码在使用 Hook 时不需要很深的组件树嵌套。这个现象在使用高阶组件、render props、和 context 的代码库中非常普遍。组件树小了，React 的工作量也随之减少。<br>传统上认为，在 React 中使用内联函数对性能的影响，与每次渲染都传递新的回调会如何破坏子组件的 shouldComponentUpdate 优化有关。Hook 从三个方面解决了这个问题。</li>
+<li>useCallback Hook 允许你在重新渲染之间保持对相同的回调引用以使得 shouldComponentUpdate 继续工作：</li>
+<li>useMemo Hook 使得控制具体子节点何时更新变得更容易，减少了对纯组件的需要。</li>
+<li>最后，useReducer Hook 减少了对深层传递回调的依赖，正如下面解释的那样。</li>
+</ul>
+</blockquote>
+<h2 id="2-Hook-和-Fiber"><a href="#2-Hook-和-Fiber" class="headerlink" title="2. Hook 和 Fiber"></a>2. Hook 和 Fiber</h2><p>从 fiber 视角, 状态和副作用相关的属性如下：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">type</span> <span class="title class_">Fiber</span> = &#123;</span><br><span class="line">  <span class="comment">// 1. fiber节点自身状态相关</span></span><br><span class="line">  <span class="attr">pendingProps</span>: <span class="built_in">any</span></span><br><span class="line">  <span class="attr">memoizedProps</span>: <span class="built_in">any</span></span><br><span class="line">  <span class="attr">updateQueue</span>: mixed</span><br><span class="line">  <span class="attr">memoizedState</span>: <span class="built_in">any</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 2. fiber节点副作用(Effect)相关</span></span><br><span class="line">  <span class="attr">flags</span>: <span class="title class_">Flags</span></span><br><span class="line">  <span class="attr">nextEffect</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span></span><br><span class="line">  <span class="attr">firstEffect</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span></span><br><span class="line">  <span class="attr">lastEffect</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-Hook-的数据结构"><a href="#3-Hook-的数据结构" class="headerlink" title="3. Hook 的数据结构"></a>3. Hook 的数据结构</h2><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="title class_">Update</span>&lt;S, A&gt; = &#123;</span><br><span class="line">  <span class="attr">lane</span>: <span class="title class_">Lane</span></span><br><span class="line">  <span class="attr">action</span>: A</span><br><span class="line">  <span class="attr">eagerReducer</span>: (<span class="function">(<span class="params">S, A</span>) =&gt;</span> S) | <span class="literal">null</span></span><br><span class="line">  <span class="attr">eagerState</span>: S | <span class="literal">null</span></span><br><span class="line">  <span class="attr">next</span>: <span class="title class_">Update</span>&lt;S, A&gt;</span><br><span class="line">  priority?: <span class="title class_">ReactPriorityLevel</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">UpdateQueue</span>&lt;S, A&gt; = &#123;</span><br><span class="line">  <span class="attr">pending</span>: <span class="title class_">Update</span>&lt;S, A&gt; | <span class="literal">null</span></span><br><span class="line">  <span class="attr">dispatch</span>: (<span class="function">(<span class="params">A</span>) =&gt;</span> mixed) | <span class="literal">null</span></span><br><span class="line">  <span class="attr">lastRenderedReducer</span>: (<span class="function">(<span class="params">S, A</span>) =&gt;</span> S) | <span class="literal">null</span></span><br><span class="line">  <span class="attr">lastRenderedState</span>: S | <span class="literal">null</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">type</span> <span class="title class_">Hook</span> = &#123;</span><br><span class="line">  <span class="attr">memoizedState</span>: <span class="built_in">any</span> <span class="comment">// 当前状态</span></span><br><span class="line">  <span class="attr">baseState</span>: <span class="built_in">any</span> <span class="comment">// 基状态</span></span><br><span class="line">  <span class="attr">baseQueue</span>: <span class="title class_">Update</span>&lt;<span class="built_in">any</span>, <span class="built_in">any</span>&gt; | <span class="literal">null</span> <span class="comment">// 基队列</span></span><br><span class="line">  <span class="attr">queue</span>: <span class="title class_">UpdateQueue</span>&lt;<span class="built_in">any</span>, <span class="built_in">any</span>&gt; | <span class="literal">null</span> <span class="comment">// 更新队列</span></span><br><span class="line">  <span class="attr">next</span>: <span class="title class_">Hook</span> | <span class="literal">null</span> <span class="comment">// next指针</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>从定义来看, Hook 对象共有 5 个属性（有关这些属性的应用, 将在 Hook 原理(状态)章节中具体分析）:</p>
+<ul>
+<li><code>hook.memoizedState</code>：保持在内存中的局部状态。</li>
+<li><code>hook.baseState</code>：hook.baseQueue 中所有 update 对象合并之后的状态。</li>
+<li><code>hook.baseQueue</code>：存储 update 对象的环形链表, 只包括高于本次渲染优先级的 update 对象。</li>
+<li><code>hook.queue</code>：存储 update 对象的 <strong>环形链表</strong>, 包括所有优先级的 update 对象。</li>
+<li><code>hook.next</code>：next 指针, 指向链表中的下一个 hook。</li>
+</ul>
+</blockquote>
+<p>所以 Hook 是一个链表, 单个 Hook 拥有自己的状态 <code>hook.memoizedState</code> 和自己的更新队列 <code>hook.queue</code>。</p>
+<p><img src="/../images/react-hook-1.png"></p>
+<blockquote>
+<p>其中 <code>hook.queue</code> 与 <code>fiber.updateQueue</code> 虽然都是 update 环形链表, 尽管 update 对象的数据结构与处理方式都高度相似, 但是这 2 个队列中的 update 对象是完全独立的。<code>hook.queue</code> 只作用于 hook 对象的状态维护, 切勿与 <code>fiber.updateQueue</code> 混淆。</p>
+</blockquote>
+<h2 id="4-Hook-的分类"><a href="#4-Hook-的分类" class="headerlink" title="4. Hook 的分类"></a>4. Hook 的分类</h2><p>官网上已经将其分为了 2 个类别, 状态 Hook（<code>State Hook</code>）, 和副作用 Hook（<code>Effect Hook</code>）.</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">type</span> <span class="title class_">HookType</span> =</span><br><span class="line">  | <span class="string">&#x27;useState&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useReducer&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useContext&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useRef&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useEffect&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useLayoutEffect&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useCallback&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useMemo&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useImperativeHandle&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useDebugValue&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useDeferredValue&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useTransition&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useMutableSource&#x27;</span></span><br><span class="line">  | <span class="string">&#x27;useOpaqueIdentifier&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="4-1-状态-Hook"><a href="#4-1-状态-Hook" class="headerlink" title="4.1 状态 Hook"></a>4.1 状态 Hook</h3><p>狭义上讲，<code>useState</code>，<code>useReducer</code> 可以在 <code>function</code> 组件添加内部的 <code>state</code>, 且 <code>useState</code> 实际上是 <code>useReducer</code> 的简易封装, 是一个最特殊(简单)的 <code>useReducer</code>. 所以将 <code>useState</code>，<code>useReducer</code> 称为状态 Hook（<code>State Hook</code>）。</p>
+<p>广义上讲, 只要能实现数据持久化且没有副作用的 Hook, 均可以视为状态 Hook（<code>State Hook</code>）, 所以还包括 <code>useContext</code>，<code>useRef</code>，<code>useCallback</code>，<code>useMemo</code> 等。这类 Hook 内部没有使用 <code>useState</code>（或 <code>useReducer</code>）, 但是它们也能实现多次 render 时, 保持其初始值不变（即数据持久化）且没有任何副作用。</p>
+<p>得益于双缓冲技术（double buffering）, 在多次 render 时, 以 fiber 为载体, 保证复用同一个 Hook 对象, 进而实现数据持久化. 具体实现细节, 在 Hook 原理(状态)章节中讨论.</p>
+<h3 id="4-2-副作用-Hook"><a href="#4-2-副作用-Hook" class="headerlink" title="4.2 副作用 Hook"></a>4.2 副作用 Hook</h3><p>副作用 Hook 则会修改 <code>fiber.flags</code>。</p>
+<blockquote>
+<p>在 <code>performUnitOfWork</code> -&gt; <code>completeWork</code> 阶段，所有存在副作用的 fiber 节点，都会被添加到父节点的副作用队列后，最后在 <code>commitRoot</code> 阶段处理这些副作用节点。</p>
+</blockquote>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 useEffect 时, 需要传入一个副作用回调函数</span></span><br><span class="line"><span class="comment">// 在 fiber 树构造完成之后，commitRoot 阶段会处理这些副作用回调</span></span><br><span class="line"><span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;这是一个副作用回调函数&#x27;</span>)</span><br><span class="line">&#125;, [])</span><br></pre></td></tr></table></figure>
+
+<p>在 react 内部，<code>useEffect</code> 就是最标准的副作用 Hook。其他比如 <code>useLayoutEffect</code> 以及自定义 Hook，如果要实现副作用，必须直接或间接的调用 <code>useEffect</code>。</p>
+<h2 id="4-执行流程"><a href="#4-执行流程" class="headerlink" title="4. 执行流程"></a>4. 执行流程</h2><p>举个例子：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState, useEffect &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">App</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="comment">// 1. useState</span></span><br><span class="line">  <span class="keyword">const</span> [a, setA] = <span class="title function_">useState</span>(<span class="number">1</span>)</span><br><span class="line">  <span class="comment">// 2. useEffect</span></span><br><span class="line">  <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`effect 1 created`</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="comment">// 3. useState</span></span><br><span class="line">  <span class="keyword">const</span> [b] = <span class="title function_">useState</span>(<span class="number">2</span>)</span><br><span class="line">  <span class="comment">// 4. useEffect</span></span><br><span class="line">  <span class="title function_">useEffect</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`effect 2 created`</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> setA(a + 1)&#125;&gt;&#123;a&#125;<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">button</span>&gt;</span>&#123;b&#125;<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-1-前置工作"><a href="#4-1-前置工作" class="headerlink" title="4.1 前置工作"></a>4.1 前置工作</h3><h4 id="4-1-1-Fiber-关联-Hook"><a href="#4-1-1-Fiber-关联-Hook" class="headerlink" title="4.1.1 Fiber 关联 Hook"></a>4.1.1 Fiber 关联 Hook</h4><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">beginWork</span>(<span class="params"></span></span><br><span class="line"><span class="params">  current: Fiber | <span class="literal">null</span>,</span></span><br><span class="line"><span class="params">  workInProgress: Fiber,</span></span><br><span class="line"><span class="params">  renderLanes: Lanes</span></span><br><span class="line"><span class="params"></span>): <span class="title class_">Fiber</span> | <span class="literal">null</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> updateLanes = workInProgress.<span class="property">lanes</span></span><br><span class="line">  <span class="keyword">switch</span> (workInProgress.<span class="property">tag</span>) &#123;</span><br><span class="line">    <span class="comment">// 只保留 FunctionComponent 相关:</span></span><br><span class="line">    <span class="keyword">case</span> <span class="title class_">FunctionComponent</span>: &#123;</span><br><span class="line">      <span class="keyword">const</span> <span class="title class_">Component</span> = workInProgress.<span class="property">type</span></span><br><span class="line">      <span class="keyword">const</span> unresolvedProps = workInProgress.<span class="property">pendingProps</span></span><br><span class="line">      <span class="keyword">const</span> resolvedProps =</span><br><span class="line">        workInProgress.<span class="property">elementType</span> === <span class="title class_">Component</span></span><br><span class="line">          ? unresolvedProps</span><br><span class="line">          : <span class="title function_">resolveDefaultProps</span>(<span class="title class_">Component</span>, unresolvedProps)</span><br><span class="line">      <span class="keyword">return</span> <span class="title function_">updateFunctionComponent</span>(</span><br><span class="line">        current,</span><br><span class="line">        workInProgress,</span><br><span class="line">        <span class="title class_">Component</span>,</span><br><span class="line">        resolvedProps,</span><br><span class="line">        renderLanes</span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">updateFunctionComponent</span>(<span class="params"></span></span><br><span class="line"><span class="params">  current,</span></span><br><span class="line"><span class="params">  workInProgress,</span></span><br><span class="line"><span class="params">  Component,</span></span><br><span class="line"><span class="params">  nextProps: <span class="built_in">any</span>,</span></span><br><span class="line"><span class="params">  renderLanes</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">  <span class="comment">// ...省略无关代码</span></span><br><span class="line">  <span class="keyword">let</span> context</span><br><span class="line">  <span class="keyword">let</span> nextChildren</span><br><span class="line">  <span class="title function_">prepareToReadContext</span>(workInProgress, renderLanes)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 进入 Hooks 相关逻辑, 最后返回下级 ReactElement 对象</span></span><br><span class="line">  nextChildren = <span class="title function_">renderWithHooks</span>(</span><br><span class="line">    current,</span><br><span class="line">    workInProgress,</span><br><span class="line">    <span class="title class_">Component</span>,</span><br><span class="line">    nextProps,</span><br><span class="line">    context,</span><br><span class="line">    renderLanes</span><br><span class="line">  )</span><br><span class="line">  <span class="comment">// 进入 reconcile 函数, 生成下级 fiber 节点</span></span><br><span class="line">  <span class="title function_">reconcileChildren</span>(current, workInProgress, nextChildren, renderLanes)</span><br><span class="line">  <span class="comment">// 返回下级 fiber 节点</span></span><br><span class="line">  <span class="keyword">return</span> workInProgress.<span class="property">child</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 <code>updateFunctionComponent</code> 函数中调用了 <code>renderWithHooks</code>，至此 Fiber 与 Hook 产生了关联。</p>
+<h4 id="4-1-2-renderWithHooks"><a href="#4-1-2-renderWithHooks" class="headerlink" title="4.1.2 renderWithHooks"></a>4.1.2 renderWithHooks</h4><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> renderWithHooks&lt;<span class="title class_">Props</span>, <span class="title class_">SecondArg</span>&gt;(</span><br><span class="line">  <span class="attr">current</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">workInProgress</span>: <span class="title class_">Fiber</span>,</span><br><span class="line">  <span class="title class_">Component</span>: <span class="function">(<span class="params">p: Props, arg: SecondArg</span>) =&gt;</span> <span class="built_in">any</span>,</span><br><span class="line">  <span class="attr">props</span>: <span class="title class_">Props</span>,</span><br><span class="line">  <span class="attr">secondArg</span>: <span class="title class_">SecondArg</span>,</span><br><span class="line">  <span class="attr">nextRenderLanes</span>: <span class="title class_">Lanes</span>,</span><br><span class="line">): <span class="built_in">any</span> &#123;</span><br><span class="line">  <span class="comment">// step1: 设置全局变量，标记渲染优先级和当前 fiber，清除当前 fiber 的遗留状态</span></span><br><span class="line">  <span class="comment">// 当前渲染优先级</span></span><br><span class="line">  renderLanes = nextRenderLanes;</span><br><span class="line">  <span class="comment">// 当前fiber节点, 也就是function组件对应的fiber节点</span></span><br><span class="line">  currentlyRenderingFiber = workInProgress;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 清除当前fiber的遗留状态</span></span><br><span class="line">  workInProgress.<span class="property">memoizedState</span> = <span class="literal">null</span>;</span><br><span class="line">  workInProgress.<span class="property">updateQueue</span> = <span class="literal">null</span>;</span><br><span class="line">  workInProgress.<span class="property">lanes</span> = <span class="title class_">NoLanes</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// step2: 构造出 Hooks 链表，最后生成子级 ReactElement 对象（children）</span></span><br><span class="line">  <span class="comment">// 指定 dispatcher，区分 mount 和 update</span></span><br><span class="line">  <span class="title class_">ReactCurrentDispatcher</span>.<span class="property">current</span> =</span><br><span class="line">    current === <span class="literal">null</span> || current.<span class="property">memoizedState</span> === <span class="literal">null</span></span><br><span class="line">      ? <span class="title class_">HooksDispatcherOnMount</span></span><br><span class="line">      : <span class="title class_">HooksDispatcherOnUpdate</span>;</span><br><span class="line">  <span class="comment">// 执行 function 函数，其中进行分析Hooks的使用</span></span><br><span class="line">  <span class="keyword">let</span> children = <span class="title class_">Component</span>(props, secondArg);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// step3: 重置全局变量，返回 children</span></span><br><span class="line">  <span class="comment">// 执行 function 之后，还原被修改的全局变量，不影响下一次调用</span></span><br><span class="line">  renderLanes = <span class="title class_">NoLanes</span>;</span><br><span class="line">  currentlyRenderingFiber = (<span class="attr">null</span>: <span class="built_in">any</span>);</span><br><span class="line">  currentHook = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  workInProgressHook = <span class="literal">null</span>;</span><br><span class="line">  didScheduleRenderPhaseUpdate = <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> children;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol>
+<li>设置全局变量，标记渲染优先级和当前 fiber，清除当前 fiber 的遗留状态。</li>
+<li>构造出 Hooks 链表，最后生成子级 ReactElement 对象（children）。</li>
+<li>重置全局变量，返回 children。<ul>
+<li>为了保证不同的 functionComponent 节点在调用时 renderWithHooks 互不影响，所以退出时重置全局变量。</li>
+</ul>
+</li>
+</ol>
+</blockquote>
+<h3 id="4-2-执行中"><a href="#4-2-执行中" class="headerlink" title="4.2 执行中"></a>4.2 执行中</h3><p>初次渲染时，逻辑执行到 <code>performUnitOfWork</code> -&gt; <code>beginWork</code> -&gt; <code>updateFunctionComponent</code> -&gt; <code>renderWithHooks</code> 前，内存结构如下：</p>
+<p><img src="/../images/react-hook-2.png"></p>
+<p><code>useState</code>, <code>useEffect</code> 在 fiber 初次构造时分别对应 <code>mountState</code> 和 <code>mountEffectImpl</code>。</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> mountState&lt;S&gt;(</span><br><span class="line">  <span class="attr">initialState</span>: (<span class="function">() =&gt;</span> S) | S</span><br><span class="line">): [S, <span class="title class_">Dispatch</span>&lt;<span class="title class_">BasicStateAction</span>&lt;S&gt;&gt;] &#123;</span><br><span class="line">  <span class="keyword">const</span> hook = <span class="title function_">mountWorkInProgressHook</span>()</span><br><span class="line">  <span class="comment">// ...省略</span></span><br><span class="line">  <span class="keyword">return</span> [hook.<span class="property">memoizedState</span>, dispatch]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">mountEffectImpl</span>(<span class="params">fiberFlags, hookFlags, create, deps</span>): <span class="built_in">void</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> hook = <span class="title function_">mountWorkInProgressHook</span>()</span><br><span class="line">  <span class="comment">// ...省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>无论 <code>useState</code>, <code>useEffect</code>, 内部都通过 <code>mountWorkInProgressHook</code> 创建一个 hook。</p>
+</blockquote>
+<h4 id="4-2-1-mountWorkInProgressHook"><a href="#4-2-1-mountWorkInProgressHook" class="headerlink" title="4.2.1 mountWorkInProgressHook"></a>4.2.1 mountWorkInProgressHook</h4><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">mountWorkInProgressHook</span>(<span class="params"></span>): <span class="title class_">Hook</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="attr">hook</span>: <span class="title class_">Hook</span> = &#123;</span><br><span class="line">    <span class="attr">memoizedState</span>: <span class="literal">null</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">baseState</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">baseQueue</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">queue</span>: <span class="literal">null</span>,</span><br><span class="line"></span><br><span class="line">    <span class="attr">next</span>: <span class="literal">null</span>,</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (workInProgressHook === <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 链表中首个 hook</span></span><br><span class="line">    currentlyRenderingFiber.<span class="property">memoizedState</span> = workInProgressHook = hook</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 将 hook 添加到链表末尾</span></span><br><span class="line">    workInProgressHook = workInProgressHook.<span class="property">next</span> = hook</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> workInProgressHook</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>逻辑是创建 Hook 并挂载到 <code>fiber.memoizedState</code> 上, 多个 Hook 以链表结构保存。</p>
+</blockquote>
+<h3 id="4-3-执行后"><a href="#4-3-执行后" class="headerlink" title="4.3 执行后"></a>4.3 执行后</h3><p>上述示例中，function 调用之后则会创建 4 个 hook, 这时的内存结构如下：</p>
+<p><img src="/../images/react-hook-3.png"></p>
+<p>无论状态 Hook 或副作用 Hook 都按照调用顺序存储在 <code>fiber.memoizedState</code> 链表中。</p>
+<p><img src="/../images/react-hook-4.png"></p>
+<h3 id="5-更新过程"><a href="#5-更新过程" class="headerlink" title="5. 更新过程"></a>5. 更新过程</h3><p>执行 <code>updateFunctionComponent</code> -&gt; <code>renderWithHooks</code> 时再次调用，内存结构如下：</p>
+<p><img src="/../images/react-hook-5.png"></p>
+<p>无论 <code>useState</code>, <code>useEffect</code>, 内部调用 <code>updateWorkInProgressHook</code> 获取一个 hook。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">updateWorkInProgressHook</span>(<span class="params"></span>): <span class="title class_">Hook</span> &#123;</span><br><span class="line">  <span class="comment">// step1：移动 currentHook 指针</span></span><br><span class="line">  <span class="keyword">let</span> <span class="attr">nextCurrentHook</span>: <span class="literal">null</span> | <span class="title class_">Hook</span></span><br><span class="line">  <span class="keyword">if</span> (currentHook === <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> current = currentlyRenderingFiber.<span class="property">alternate</span></span><br><span class="line">    <span class="keyword">if</span> (current !== <span class="literal">null</span>) &#123;</span><br><span class="line">      nextCurrentHook = current.<span class="property">memoizedState</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      nextCurrentHook = <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    nextCurrentHook = currentHook.<span class="property">next</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// step2：移动 workInProgressHook 指针</span></span><br><span class="line">  <span class="keyword">let</span> <span class="attr">nextWorkInProgressHook</span>: <span class="literal">null</span> | <span class="title class_">Hook</span></span><br><span class="line">  <span class="keyword">if</span> (workInProgressHook === <span class="literal">null</span>) &#123;</span><br><span class="line">    nextWorkInProgressHook = currentlyRenderingFiber.<span class="property">memoizedState</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    nextWorkInProgressHook = workInProgressHook.<span class="property">next</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (nextWorkInProgressHook !== <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 渲染时更新</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    currentHook = nextCurrentHook</span><br><span class="line">    <span class="comment">// step3：克隆 currentHook 作为新的 workInProgressHook。</span></span><br><span class="line">    <span class="comment">// 随后逻辑与 mountWorkInProgressHook 一致</span></span><br><span class="line">    <span class="keyword">const</span> <span class="attr">newHook</span>: <span class="title class_">Hook</span> = &#123;</span><br><span class="line">      <span class="attr">memoizedState</span>: currentHook.<span class="property">memoizedState</span>,</span><br><span class="line"></span><br><span class="line">      <span class="attr">baseState</span>: currentHook.<span class="property">baseState</span>,</span><br><span class="line">      <span class="attr">baseQueue</span>: currentHook.<span class="property">baseQueue</span>,</span><br><span class="line">      <span class="attr">queue</span>: currentHook.<span class="property">queue</span>,</span><br><span class="line"></span><br><span class="line">      <span class="attr">next</span>: <span class="literal">null</span>, <span class="comment">// 注意next指针是null</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (workInProgressHook === <span class="literal">null</span>) &#123;</span><br><span class="line">      currentlyRenderingFiber.<span class="property">memoizedState</span> = workInProgressHook = newHook</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      workInProgressHook = workInProgressHook.<span class="property">next</span> = newHook</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> workInProgressHook</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>updateWorkInProgressHook</code> 函数逻辑简单：目的是为了让 <code>currentHook</code> 和 <code>workInProgressHook</code> 两个指针同时向后移动。</p>
+<ol>
+<li>由于 <code>renderWithHooks</code> 函数设置了 <code>workInProgress.memoizedState=null</code>，所以 <code>workInProgressHook</code> 初始值必然为 <code>null</code>，只能从 <code>currentHook</code> 克隆。</li>
+<li>而从 <code>currentHook</code> 克隆而来的 <code>newHook.next=null</code>，而导致 <code>workInProgressHook</code> 链表需要完全重建。</li>
+</ol>
+<p><code>renderWithHooks</code> 执行完成之后，有关 Hook 的内存结构如下：</p>
+<p><img src="/../images/react-hook-6.png"></p>
+<blockquote>
+<ol>
+<li>以双缓冲技术为基础，将 <code>current.memoizedState</code> 按照顺序克隆到了 <code>workInProgress.memoizedState</code> 中。</li>
+<li>Hook 经过了一次克隆, 内部的属性 <code>hook.memoizedState</code> 等，都没有变动，所以其状态并不会丢失。</li>
+</ol>
+</blockquote>
+<p><img src="/../images/react-hook-7.png"></p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#React" >
+    <span class="tag-code">React</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/React-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6_2/">
+        <span class="nav-arrow">← </span>
+        
+          React 事件机制（2）
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Utterances START -->
+      <div id="utterances"></div>
+      <script src="https://utteranc.es/client.js"
+        repo=""
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async></script>    
+      <!-- Utterances END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-%E8%83%8C%E6%99%AF"><span class="toc-nav-text">1. 背景</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-1-%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81-Hook%EF%BC%9F"><span class="toc-nav-text">1.1 什么需要 Hook？</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-2-hook-%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-nav-text">1.2 hook 是什么？</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-Hook-%E5%92%8C-Fiber"><span class="toc-nav-text">2. Hook 和 Fiber</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-Hook-%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-nav-text">3. Hook 的数据结构</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-Hook-%E7%9A%84%E5%88%86%E7%B1%BB"><span class="toc-nav-text">4. Hook 的分类</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-1-%E7%8A%B6%E6%80%81-Hook"><span class="toc-nav-text">4.1 状态 Hook</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-2-%E5%89%AF%E4%BD%9C%E7%94%A8-Hook"><span class="toc-nav-text">4.2 副作用 Hook</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="toc-nav-text">4. 执行流程</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-1-%E5%89%8D%E7%BD%AE%E5%B7%A5%E4%BD%9C"><span class="toc-nav-text">4.1 前置工作</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#4-1-1-Fiber-%E5%85%B3%E8%81%94-Hook"><span class="toc-nav-text">4.1.1 Fiber 关联 Hook</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#4-1-2-renderWithHooks"><span class="toc-nav-text">4.1.2 renderWithHooks</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-2-%E6%89%A7%E8%A1%8C%E4%B8%AD"><span class="toc-nav-text">4.2 执行中</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#4-2-1-mountWorkInProgressHook"><span class="toc-nav-text">4.2.1 mountWorkInProgressHook</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-3-%E6%89%A7%E8%A1%8C%E5%90%8E"><span class="toc-nav-text">4.3 执行后</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#5-%E6%9B%B4%E6%96%B0%E8%BF%87%E7%A8%8B"><span class="toc-nav-text">5. 更新过程</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://lemonshi.github.io/React-hook_1/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', '/css/images/error_icon.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== '/css/images/error_icon.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2024 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    <!-- Theme by <a target="_blank" rel="noopener" href="https://github.com/yanm1ng">yanm1ng</a> -->
+    
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      hljs.configure({useBR: true});
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>
