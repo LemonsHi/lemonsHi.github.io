@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="wu-note">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      React-hook（2） | wu-note
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+  
+  
+<meta name="generator" content="Hexo 7.1.1"></head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>wu-note</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+    
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>React-hook（2）</h2>
+  <p class="post-date">2024-04-10</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="1-Fiber-mount-阶段"><a href="#1-Fiber-mount-阶段" class="headerlink" title="1. Fiber mount 阶段"></a>1. Fiber mount 阶段</h2><p><code>useState</code> 对应源码 <code>mountState</code>，<code>useReducer</code> 对应源码 <code>mountReducer</code>。</p>
+<h3 id="1-1-mountSate"><a href="#1-1-mountSate" class="headerlink" title="1.1 mountSate"></a>1.1 mountSate</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> mountState&lt;S&gt;(</span><br><span class="line">  <span class="attr">initialState</span>: (<span class="function">() =&gt;</span> S) | S</span><br><span class="line">): [S, <span class="title class_">Dispatch</span>&lt;<span class="title class_">BasicStateAction</span>&lt;S&gt;&gt;] &#123;</span><br><span class="line">  <span class="comment">// step1：创建 hook</span></span><br><span class="line">  <span class="keyword">const</span> hook = <span class="title function_">mountWorkInProgressHook</span>()</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> initialState === <span class="string">&#x27;function&#x27;</span>) &#123;</span><br><span class="line">    initialState = <span class="title function_">initialState</span>()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// step2：初始化hook的属性</span></span><br><span class="line">  <span class="comment">// step2.1：设置 hook.memoizedState/hook.baseState</span></span><br><span class="line">  hook.<span class="property">memoizedState</span> = hook.<span class="property">baseState</span> = initialState</span><br><span class="line">  <span class="comment">// step2.2：设置 hook.queue</span></span><br><span class="line">  <span class="keyword">const</span> queue = (hook.<span class="property">queue</span> = &#123;</span><br><span class="line">    <span class="attr">pending</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">dispatch</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="comment">// queue.lastRenderedReducer是内置函数</span></span><br><span class="line">    <span class="attr">lastRenderedReducer</span>: basicStateReducer,</span><br><span class="line">    <span class="attr">lastRenderedState</span>: (<span class="attr">initialState</span>: any),</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="comment">// step2.3：设置 hook.dispatch</span></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">dispatch</span>: <span class="title class_">Dispatch</span>&lt;<span class="title class_">BasicStateAction</span>&lt;S&gt;&gt; = (queue.<span class="property">dispatch</span> =</span><br><span class="line">    (dispatchAction.<span class="title function_">bind</span>(<span class="literal">null</span>, currentlyRenderingFiber, queue): any))</span><br><span class="line"></span><br><span class="line">  <span class="comment">// step3：返回 [当前状态, dispatch 函数]</span></span><br><span class="line">  <span class="keyword">return</span> [hook.<span class="property">memoizedState</span>, dispatch]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-mountReducer"><a href="#1-2-mountReducer" class="headerlink" title="1.2 mountReducer"></a>1.2 mountReducer</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> mountReducer&lt;S, I, A&gt;(</span><br><span class="line">  <span class="attr">reducer</span>: <span class="function">(<span class="params">S, A</span>) =&gt;</span> S,</span><br><span class="line">  <span class="attr">initialArg</span>: I,</span><br><span class="line">  init?: <span class="function">(<span class="params">I</span>) =&gt;</span> S</span><br><span class="line">): [S, <span class="title class_">Dispatch</span>&lt;A&gt;] &#123;</span><br><span class="line">  <span class="comment">// step1：创建 hook</span></span><br><span class="line">  <span class="keyword">const</span> hook = <span class="title function_">mountWorkInProgressHook</span>()</span><br><span class="line">  <span class="keyword">let</span> initialState</span><br><span class="line">  <span class="keyword">if</span> (init !== <span class="literal">undefined</span>) &#123;</span><br><span class="line">    initialState = <span class="title function_">init</span>(initialArg)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    initialState = ((<span class="attr">initialArg</span>: any): S)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// step2：初始化 hook 的属性</span></span><br><span class="line">  <span class="comment">// step2.1：设置 hook.memoizedState/hook.baseState</span></span><br><span class="line">  hook.<span class="property">memoizedState</span> = hook.<span class="property">baseState</span> = initialState</span><br><span class="line">  <span class="comment">// step2.2：设置 hook.queue</span></span><br><span class="line">  <span class="keyword">const</span> queue = (hook.<span class="property">queue</span> = &#123;</span><br><span class="line">    <span class="attr">pending</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">dispatch</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="comment">// queue.lastRenderedReducer是由外传入</span></span><br><span class="line">    <span class="attr">lastRenderedReducer</span>: reducer,</span><br><span class="line">    <span class="attr">lastRenderedState</span>: (<span class="attr">initialState</span>: any),</span><br><span class="line">  &#125;)</span><br><span class="line">  <span class="comment">// step2.3：设置 hook.dispatch</span></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">dispatch</span>: <span class="title class_">Dispatch</span>&lt;A&gt; = (queue.<span class="property">dispatch</span> = (dispatchAction.<span class="title function_">bind</span>(</span><br><span class="line">    <span class="literal">null</span>,</span><br><span class="line">    currentlyRenderingFiber,</span><br><span class="line">    queue</span><br><span class="line">  ): any))</span><br><span class="line"></span><br><span class="line">  <span class="comment">// step3：返回 [当前状态, dispatch 函数]</span></span><br><span class="line">  <span class="keyword">return</span> [hook.<span class="property">memoizedState</span>, dispatch]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-总结"><a href="#1-3-总结" class="headerlink" title="1.3 总结"></a>1.3 总结</h3><p><code>mountState</code> 和 <code>mountReducer</code> 逻辑简单：主要负责创建 hook，初始化 hook 的属性，最后返回 [当前状态, dispatch 函数]。</p>
+<p>唯一的不同点是 <code>hook.queue.lastRenderedReducer</code>：</p>
+<ul>
+<li><code>mountState</code> 使用的是内置的 <code>basicStateReducer</code><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> basicStateReducer&lt;S&gt;(<span class="attr">state</span>: S, <span class="attr">action</span>: <span class="title class_">BasicStateAction</span>&lt;S&gt;): S &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">typeof</span> action === <span class="string">&#x27;function&#x27;</span> ? <span class="title function_">action</span>(state) : action</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><code>mountReducer</code> 使用的是外部传入自定义 <code>reducer</code></li>
+</ul>
+<blockquote>
+<p>可见 <code>mountState</code> 是 <code>mountReducer</code> 的一种特殊情况，即 <code>useState</code> 也是 <code>useReducer</code> 的一种特殊情况，也是最简单的情况。</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** useState 可以转换成 useReducer： **/</span></span><br><span class="line"><span class="keyword">const</span> [state, dispatch] = <span class="title function_">useState</span>(&#123; <span class="attr">count</span>: <span class="number">0</span> &#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等价于</span></span><br><span class="line"><span class="keyword">const</span> [state, dispatch] = <span class="title function_">useReducer</span>(</span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">basicStateReducer</span>(<span class="params">state, action</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">typeof</span> action === <span class="string">&#x27;function&#x27;</span> ? <span class="title function_">action</span>(state) : action</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123; <span class="attr">count</span>: <span class="number">0</span> &#125;</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当需要更新 state 时, 有 2 种方式</span></span><br><span class="line"><span class="comment">// 1.直接设置</span></span><br><span class="line"><span class="title function_">dispatch</span>(&#123; <span class="attr">count</span>: <span class="number">1</span> &#125;)</span><br><span class="line"><span class="comment">// 2.通过回调函数设置</span></span><br><span class="line"><span class="title function_">dispatch</span>(<span class="function">(<span class="params">state</span>) =&gt;</span> (&#123; <span class="attr">count</span>: state.<span class="property">count</span> + <span class="number">1</span> &#125;))</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>useState</code> 就是对 <code>useReducer</code> 的基本封装，内置了一个特殊的 <code>reducer</code>。创建 hook 之后返回值 [<code>hook.memoizedState</code>, <code>dispatch</code>] 中的 <code>dispatch</code> 实际上会调用 <code>reducer</code> 函数。</p>
+</blockquote>
+<h4 id="1-3-1-状态初始化"><a href="#1-3-1-状态初始化" class="headerlink" title="1.3.1 状态初始化"></a>1.3.1 状态初始化</h4><p>在 <code>useState(initialState)</code> 函数内部，设置 <code>hook.memoizedState = hook.baseState = initialState</code>，初始状态被同时保存到了 <code>hook.baseState</code>，<code>hook.memoizedState</code> 中。</p>
+<ul>
+<li><code>hook.memoizedState</code>：当前状态。</li>
+<li><code>hook.baseState</code>：基础状态, 作为合并 <code>hook.baseQueue</code> 的初始值。</li>
+</ul>
+<p>最后返回 [<code>hook.memoizedState</code>, <code>dispatch</code>]，所以在 function 中使用的是 <code>hook.memoizedState</code>。</p>
+<h2 id="2-Fiber-update-阶段"><a href="#2-Fiber-update-阶段" class="headerlink" title="2. Fiber update 阶段"></a>2. Fiber update 阶段</h2><p>一个例子：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">function</span> <span class="title function_">App</span>(<span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> [count, dispatch] = <span class="title function_">useState</span>(<span class="number">0</span>)</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">button</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">      <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> &#123;</span></span><br><span class="line"><span class="language-xml">        dispatch(1)</span></span><br><span class="line"><span class="language-xml">        dispatch(3)</span></span><br><span class="line"><span class="language-xml">        dispatch(2)</span></span><br><span class="line"><span class="language-xml">      &#125;&#125;</span></span><br><span class="line"><span class="language-xml">    &gt;</span></span><br><span class="line"><span class="language-xml">      &#123;count&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>初次渲染时<code>count = 0</code>，这时 hook 对象的内存状态如下：</p>
+<p><img src="/../images/react-hook-8.png"></p>
+<p>点击 <code>button</code>，通过 <code>dispatch</code> 函数进行更新，<code>dispatch</code> 实际就是 <code>dispatchAction</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> dispatchAction&lt;S, A&gt;(</span><br><span class="line">  <span class="attr">fiber</span>: <span class="title class_">Fiber</span>,</span><br><span class="line">  <span class="attr">queue</span>: <span class="title class_">UpdateQueue</span>&lt;S, A&gt;,</span><br><span class="line">  <span class="attr">action</span>: A</span><br><span class="line">) &#123;</span><br><span class="line">  <span class="comment">// step1：创建 update 对象</span></span><br><span class="line">  <span class="keyword">const</span> eventTime = <span class="title function_">requestEventTime</span>()</span><br><span class="line">  <span class="comment">// Legacy模式返回SyncLane</span></span><br><span class="line">  <span class="keyword">const</span> lane = <span class="title function_">requestUpdateLane</span>(fiber)</span><br><span class="line">  <span class="keyword">const</span> <span class="attr">update</span>: <span class="title class_">Update</span>&lt;S, A&gt; = &#123;</span><br><span class="line">    lane,</span><br><span class="line">    action,</span><br><span class="line">    <span class="attr">eagerReducer</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">eagerState</span>: <span class="literal">null</span>,</span><br><span class="line">    <span class="attr">next</span>: (<span class="attr">null</span>: any),</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// step2：将 update 对象添加到 hook.queue.pending 队列</span></span><br><span class="line">  <span class="keyword">const</span> pending = queue.<span class="property">pending</span></span><br><span class="line">  <span class="keyword">if</span> (pending === <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 首个update, 创建一个环形链表</span></span><br><span class="line">    update.<span class="property">next</span> = update</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    update.<span class="property">next</span> = pending.<span class="property">next</span></span><br><span class="line">    pending.<span class="property">next</span> = update</span><br><span class="line">  &#125;</span><br><span class="line">  queue.<span class="property">pending</span> = update</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> alternate = fiber.<span class="property">alternate</span></span><br><span class="line">  <span class="keyword">if</span> (</span><br><span class="line">    fiber === currentlyRenderingFiber ||</span><br><span class="line">    (alternate !== <span class="literal">null</span> &amp;&amp; alternate === currentlyRenderingFiber)</span><br><span class="line">  ) &#123;</span><br><span class="line">    <span class="comment">// 渲染时更新, 做好全局标记</span></span><br><span class="line">    didScheduleRenderPhaseUpdateDuringThisPass =</span><br><span class="line">      didScheduleRenderPhaseUpdate = <span class="literal">true</span></span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// ...省略性能优化部分</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// step3：发起调度更新, 进入`reconciler 运作流程`中的输入阶段.</span></span><br><span class="line">    <span class="title function_">scheduleUpdateOnFiber</span>(fiber, lane, eventTime)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码逻辑介绍：</p>
+<ol>
+<li>创建<code>update</code>对象，其中<code>update.lane</code>代表优先级。</li>
+<li>将<code>update</code>对象添加到<code>hook.queue.pending</code>环形链表。<ul>
+<li><strong>环形链表的特征</strong>：为了方便添加新元素和快速拿到队首元素（都是 O(1)），所以 <code>pending</code> 指针指向了链表中最后一个元素。</li>
+</ul>
+</li>
+<li>发起调度更新：调用<code>scheduleUpdateOnFiber</code>，进入 <code>reconciler</code> 运作流程中的输入阶段。</li>
+</ol>
+<blockquote>
+<p>上述例子中虽然同时执行了 3 次 <code>dispatch</code>，会请求 3 次调度，由于调度中心的 <strong>节流优化</strong>，最后只会执行一次渲染。</p>
+</blockquote>
+<h3 id="2-1-updateState"><a href="#2-1-updateState" class="headerlink" title="2.1 updateState"></a>2.1 updateState</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> updateState&lt;S&gt;(</span><br><span class="line">  <span class="attr">initialState</span>: (<span class="function">() =&gt;</span> S) | S</span><br><span class="line">): [S, <span class="title class_">Dispatch</span>&lt;<span class="title class_">BasicStateAction</span>&lt;S&gt;&gt;] &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">updateReducer</span>(basicStateReducer, (<span class="attr">initialState</span>: any))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在执行 <code>updateReducer</code> 之前，hook 相关的内存结构如下：</p>
+<p><img src="/../images/react-hook-9.png"></p>
+<h3 id="2-2-updateReducer"><a href="#2-2-updateReducer" class="headerlink" title="2.2 updateReducer"></a>2.2 updateReducer</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> updateReducer&lt;S, I, A&gt;(</span><br><span class="line">  <span class="attr">reducer</span>: <span class="function">(<span class="params">S, A</span>) =&gt;</span> S,</span><br><span class="line">  <span class="attr">initialArg</span>: I,</span><br><span class="line">  init?: <span class="function">(<span class="params">I</span>) =&gt;</span> S</span><br><span class="line">): [S, <span class="title class_">Dispatch</span>&lt;A&gt;] &#123;</span><br><span class="line">  <span class="comment">// step1：获取 workInProgressHook 对象</span></span><br><span class="line">  <span class="keyword">const</span> hook = <span class="title function_">updateWorkInProgressHook</span>()</span><br><span class="line">  <span class="keyword">const</span> queue = hook.<span class="property">queue</span></span><br><span class="line">  queue.<span class="property">lastRenderedReducer</span> = reducer</span><br><span class="line">  <span class="keyword">const</span> <span class="attr">current</span>: <span class="title class_">Hook</span> = (<span class="attr">currentHook</span>: any)</span><br><span class="line">  <span class="keyword">let</span> baseQueue = current.<span class="property">baseQueue</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// step2：链表拼接 - 将 hook.queue.pending 拼接到 current.baseQueue</span></span><br><span class="line">  <span class="keyword">const</span> pendingQueue = queue.<span class="property">pending</span></span><br><span class="line">  <span class="keyword">if</span> (pendingQueue !== <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (baseQueue !== <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="keyword">const</span> baseFirst = baseQueue.<span class="property">next</span></span><br><span class="line">      <span class="keyword">const</span> pendingFirst = pendingQueue.<span class="property">next</span></span><br><span class="line">      baseQueue.<span class="property">next</span> = pendingFirst</span><br><span class="line">      pendingQueue.<span class="property">next</span> = baseFirst</span><br><span class="line">    &#125;</span><br><span class="line">    current.<span class="property">baseQueue</span> = baseQueue = pendingQueue</span><br><span class="line">    queue.<span class="property">pending</span> = <span class="literal">null</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// step3：状态计算</span></span><br><span class="line">  <span class="keyword">if</span> (baseQueue !== <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> first = baseQueue.<span class="property">next</span></span><br><span class="line">    <span class="keyword">let</span> newState = current.<span class="property">baseState</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> newBaseState = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">let</span> newBaseQueueFirst = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">let</span> newBaseQueueLast = <span class="literal">null</span></span><br><span class="line">    <span class="keyword">let</span> update = first</span><br><span class="line"></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">      <span class="keyword">const</span> updateLane = update.<span class="property">lane</span></span><br><span class="line">      <span class="comment">// step3.1：优先级提取 update</span></span><br><span class="line">      <span class="keyword">if</span> (!<span class="title function_">isSubsetOfLanes</span>(renderLanes, updateLane)) &#123;</span><br><span class="line">        <span class="comment">// 优先级不够: 加入到 baseQueue 中, 等待下一次 render</span></span><br><span class="line">        <span class="keyword">const</span> <span class="attr">clone</span>: <span class="title class_">Update</span>&lt;S, A&gt; = &#123;</span><br><span class="line">          <span class="attr">lane</span>: updateLane,</span><br><span class="line">          <span class="attr">action</span>: update.<span class="property">action</span>,</span><br><span class="line">          <span class="attr">eagerReducer</span>: update.<span class="property">eagerReducer</span>,</span><br><span class="line">          <span class="attr">eagerState</span>: update.<span class="property">eagerState</span>,</span><br><span class="line">          <span class="attr">next</span>: (<span class="attr">null</span>: any),</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (newBaseQueueLast === <span class="literal">null</span>) &#123;</span><br><span class="line">          newBaseQueueFirst = newBaseQueueLast = clone</span><br><span class="line">          newBaseState = newState</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          newBaseQueueLast = newBaseQueueLast.<span class="property">next</span> = clone</span><br><span class="line">        &#125;</span><br><span class="line">        currentlyRenderingFiber.<span class="property">lanes</span> = <span class="title function_">mergeLanes</span>(</span><br><span class="line">          currentlyRenderingFiber.<span class="property">lanes</span>,</span><br><span class="line">          updateLane</span><br><span class="line">        )</span><br><span class="line">        <span class="title function_">markSkippedUpdateLanes</span>(updateLane)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 优先级足够: 状态合并</span></span><br><span class="line">        <span class="keyword">if</span> (newBaseQueueLast !== <span class="literal">null</span>) &#123;</span><br><span class="line">          <span class="comment">// 更新 baseQueue</span></span><br><span class="line">          <span class="keyword">const</span> <span class="attr">clone</span>: <span class="title class_">Update</span>&lt;S, A&gt; = &#123;</span><br><span class="line">            <span class="attr">lane</span>: <span class="title class_">NoLane</span>,</span><br><span class="line">            <span class="attr">action</span>: update.<span class="property">action</span>,</span><br><span class="line">            <span class="attr">eagerReducer</span>: update.<span class="property">eagerReducer</span>,</span><br><span class="line">            <span class="attr">eagerState</span>: update.<span class="property">eagerState</span>,</span><br><span class="line">            <span class="attr">next</span>: (<span class="attr">null</span>: any),</span><br><span class="line">          &#125;</span><br><span class="line">          newBaseQueueLast = newBaseQueueLast.<span class="property">next</span> = clone</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (update.<span class="property">eagerReducer</span> === reducer) &#123;</span><br><span class="line">          <span class="comment">// 性能优化: 如果存在 update.eagerReducer, 直接使用update.eagerState.避免重复调用reducer</span></span><br><span class="line">          newState = ((update.<span class="property">eagerState</span>: any): S)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">          <span class="keyword">const</span> action = update.<span class="property">action</span></span><br><span class="line">          <span class="comment">// 调用 reducer 获取最新状态</span></span><br><span class="line">          newState = <span class="title function_">reducer</span>(newState, action)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">      update = update.<span class="property">next</span></span><br><span class="line">    &#125; <span class="keyword">while</span> (update !== <span class="literal">null</span> &amp;&amp; update !== first)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// step3.2：更新属性</span></span><br><span class="line">    <span class="keyword">if</span> (newBaseQueueLast === <span class="literal">null</span>) &#123;</span><br><span class="line">      newBaseState = newState</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      newBaseQueueLast.<span class="property">next</span> = (<span class="attr">newBaseQueueFirst</span>: any)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="title function_">is</span>(newState, hook.<span class="property">memoizedState</span>)) &#123;</span><br><span class="line">      <span class="title function_">markWorkInProgressReceivedUpdate</span>()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 把计算之后的结果更新到 workInProgressHook 上</span></span><br><span class="line">    hook.<span class="property">memoizedState</span> = newState</span><br><span class="line">    hook.<span class="property">baseState</span> = newBaseState</span><br><span class="line">    hook.<span class="property">baseQueue</span> = newBaseQueueLast</span><br><span class="line">    queue.<span class="property">lastRenderedState</span> = newState</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="attr">dispatch</span>: <span class="title class_">Dispatch</span>&lt;A&gt; = (queue.<span class="property">dispatch</span>: any)</span><br><span class="line">  <span class="keyword">return</span> [hook.<span class="property">memoizedState</span>, dispatch]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>updateReducer</code> 函数逻辑如下：</p>
+<ul>
+<li>调用 <code>updateWorkInProgressHook</code> 获取 <code>workInProgressHook</code> 对象。</li>
+<li>链表拼接: 将 <code>hook.queue.pending</code> 拼接到 <code>current.baseQueue</code><ul>
+<li><img src="/../images/react-hook-10.png"></li>
+</ul>
+</li>
+<li>状态计算<ul>
+<li><code>update</code> 优先级不够：加入到 <code>baseQueue</code> 中, 等待下一次 <code>render</code>。</li>
+<li><code>update</code> 优先级足够：状态合并。</li>
+<li>更新属性。<ul>
+<li><img src="/../images/react-hook-11.png"></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-3-异步更新"><a href="#2-3-异步更新" class="headerlink" title="2.3 异步更新"></a>2.3 异步更新</h3><p>假设有一个 <code>queue.pending</code> 链表，其中 update 优先级不同，绿色表示高优先级，灰色表示低优先级，红色表示最高优先级。</p>
+<p>在执行 <code>updateReducer</code> 之前，<code>hook.memoizedState</code> 有如下结构：</p>
+<p><img src="/../images/react-hook-12.png"></p>
+<p><strong>步骤图解</strong></p>
+<ol>
+<li>链表拼接：和同步更新时一致，直接把 <code>queue.pending</code> 拼接到 <code>current.baseQueue</code>。<br><img src="/../images/react-hook-13.png"></li>
+<li>状态计算<ul>
+<li>现在所有 <code>update.lane</code> 都符合渲染优先级，所以最后的内存结构与同步更新一致（<code>memoizedState=4</code>，<code>baseState=4</code>）。<br><img src="/../images/react-hook-14.png"></li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>尽管 update 链表的优先级不同，中间的 render 可能有多次，但最终的更新结果等于 update 链表按顺序合并</p>
+</blockquote>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#React" >
+    <span class="tag-code">React</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/React-hook_1/">
+        <span class="nav-arrow">← </span>
+        
+          React Hook（1）
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Utterances START -->
+      <div id="utterances"></div>
+      <script src="https://utteranc.es/client.js"
+        repo=""
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async></script>    
+      <!-- Utterances END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-Fiber-mount-%E9%98%B6%E6%AE%B5"><span class="toc-nav-text">1. Fiber mount 阶段</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-1-mountSate"><span class="toc-nav-text">1.1 mountSate</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-2-mountReducer"><span class="toc-nav-text">1.2 mountReducer</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-3-%E6%80%BB%E7%BB%93"><span class="toc-nav-text">1.3 总结</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#1-3-1-%E7%8A%B6%E6%80%81%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-nav-text">1.3.1 状态初始化</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-Fiber-update-%E9%98%B6%E6%AE%B5"><span class="toc-nav-text">2. Fiber update 阶段</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-1-updateState"><span class="toc-nav-text">2.1 updateState</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-2-updateReducer"><span class="toc-nav-text">2.2 updateReducer</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-3-%E5%BC%82%E6%AD%A5%E6%9B%B4%E6%96%B0"><span class="toc-nav-text">2.3 异步更新</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://lemonshi.github.io/React-hook_2/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', '/css/images/error_icon.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== '/css/images/error_icon.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2024 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    <!-- Theme by <a target="_blank" rel="noopener" href="https://github.com/yanm1ng">yanm1ng</a> -->
+    
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      hljs.configure({useBR: true});
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>
