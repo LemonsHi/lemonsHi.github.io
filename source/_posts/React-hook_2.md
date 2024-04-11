@@ -338,3 +338,21 @@ function updateReducer<S, I, A>(
   - `update` 优先级足够：状态合并。
   - 更新属性。
     - ![](../images/react-hook-11.png)
+
+### 2.3 异步更新
+
+假设有一个 `queue.pending` 链表，其中 update 优先级不同，绿色表示高优先级，灰色表示低优先级，红色表示最高优先级。
+
+在执行 `updateReducer` 之前，`hook.memoizedState` 有如下结构：
+
+![](../images/react-hook-12.png)
+
+**步骤图解**
+
+1. 链表拼接：和同步更新时一致，直接把 `queue.pending` 拼接到 `current.baseQueue`。
+   ![](../images/react-hook-13.png)
+2. 状态计算
+   - 现在所有 `update.lane` 都符合渲染优先级，所以最后的内存结构与同步更新一致（`memoizedState=4`，`baseState=4`）。
+     ![](../images/react-hook-14.png)
+
+> 尽管 update 链表的优先级不同，中间的 render 可能有多次，但最终的更新结果等于 update 链表按顺序合并
