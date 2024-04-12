@@ -1,5 +1,5 @@
 ---
-title: React-hook（3）
+title: （wip）React-hook（3）
 date: 2024-04-11 17:36:37
 tags: React
 ---
@@ -136,3 +136,106 @@ export type Effect = {
 ![](../images/react-hook-15.png)
 
 `workInProgress.flags` 被打上了标记，最后会在 fiber 树渲染阶段的 `commitRoot` 函数中处理
+
+### 1.5 回调处理
+
+完成 `fiber` 树构造后，逻辑会进入 **渲染阶段**。在 `commitRootImpl` 函数中，整个渲染过程被 3 个函数分布实现：
+
+1. `commitBeforeMutationEffects`
+2. `commitMutationEffects`
+3. `commitLayoutEffects`
+
+这 3 个函数会处理 `fiber.flags`，也会根据情况处理 `fiber.updateQueue.lastEffect`
+
+#### 1.5.1 commitBeforeMutationEffects
+
+```js
+function commitBeforeMutationEffects() {
+  while (nextEffect !== null) {
+    // ...省略无关代码, 只保留Hook相关
+
+    // 处理`Passive`标记
+    const flags = nextEffect.flags
+    if ((flags & Passive) !== NoFlags) {
+      if (!rootDoesHavePassiveEffects) {
+        rootDoesHavePassiveEffects = true
+        scheduleCallback(NormalSchedulerPriority, () => {
+          flushPassiveEffects()
+          return null
+        })
+      }
+    }
+    nextEffect = nextEffect.nextEffect
+  }
+}
+```
+
+> **注意**：由于 `flushPassiveEffects` 被包裹在 `scheduleCallback` 回调中，由调度中心来处理，且参数是 `NormalSchedulerPriority`，故这是一个异步回调
+
+#### 1.5.2 commitMutationEffects
+
+```js
+function commitMutationEffects(
+  root: FiberRoot,
+  renderPriorityLevel: ReactPriorityLevel
+) {
+  // ...省略无关代码, 只保留Hook相关
+  while (nextEffect !== null) {
+    const flags = nextEffect.flags
+    const primaryFlags = flags & (Placement | Update | Deletion | Hydrating)
+    switch (primaryFlags) {
+      case Update: {
+        // useEffect, useLayoutEffect 都会设置 Update 标记
+        // 更新节点
+        const current = nextEffect.alternate
+        commitWork(current, nextEffect)
+        break
+      }
+    }
+    nextEffect = nextEffect.nextEffect
+  }
+}
+
+function commitWork(current: Fiber | null, finishedWork: Fiber): void {
+  // ...省略无关代码, 只保留Hook相关
+  switch (finishedWork.tag) {
+    case FunctionComponent:
+    case ForwardRef:
+    case MemoComponent:
+    case SimpleMemoComponent:
+    case Block: {
+      // 在突变阶段调用销毁函数, 保证所有的 effect.destroy 函数都会在 effect.create 之前执行
+      commitHookEffectListUnmount(HookLayout | HookHasEffect, finishedWork)
+      return
+    }
+  }
+}
+
+// 依次执行: effect.destroy
+function commitHookEffectListUnmount(tag: number, finishedWork: Fiber) {
+  const updateQueue: FunctionComponentUpdateQueue | null =
+    (finishedWork.updateQueue: any)
+  const lastEffect = updateQueue !== null ? updateQueue.lastEffect : null
+  if (lastEffect !== null) {
+    const firstEffect = lastEffect.next
+    let effect = firstEffect
+    do {
+      if ((effect.tag & tag) === tag) {
+        // 根据传入的 tag 过滤 effect 链表.
+        const destroy = effect.destroy
+        effect.destroy = undefined
+        if (destroy !== undefined) {
+          destroy()
+        }
+      }
+      effect = effect.next
+    } while (effect !== firstEffect)
+  }
+}
+```
+
+> 调用关系：`commitMutationEffects` -> `commitWork` -> `commitHookEffectListUnmount`
+>
+> - 注意在调用 `commitHookEffectListUnmount(HookLayout | HookHasEffect, finishedWork)` 时，参数是 `HookLayout | HookHasEffect`
+> - 而 `HookLayout | HookHasEffect` 是通过 `useLayoutEffect` 创建的 `effect`。所以 `commitHookEffectListUnmount` 函数只能处理由 `useLayoutEffect()` 创建的 `effect`
+> - 同步调用 `effect.destroy()`
