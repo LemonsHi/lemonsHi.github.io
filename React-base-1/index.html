@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="wu-note">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      React-base（1） | wu-note
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+  
+  
+<meta name="generator" content="Hexo 7.1.1"></head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>wu-note</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+    
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>React-base（1）</h2>
+  <p class="post-date">2024-04-16</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="1-包说明"><a href="#1-包说明" class="headerlink" title="1. 包说明"></a>1. 包说明</h2><h3 id="1-1-react"><a href="#1-1-react" class="headerlink" title="1.1 react"></a>1.1 react</h3><p><code>react</code> 基础包，<strong>只提供定义 <code>react</code> 组件（<code>ReactElement</code>）的必要函数</strong>，一般来说需要和渲染器（<code>react-dom</code>，<code>react-native</code>）一同使用。在编写 <code>react</code> 应用的代码时，大部分都是调用此包的 API</p>
+<h3 id="1-2-react-dom"><a href="#1-2-react-dom" class="headerlink" title="1.2 react-dom"></a>1.2 react-dom</h3><p><code>react</code> 渲染器之一，<strong>是 <code>react</code> 与 web 平台连接的桥梁（可以在浏览器和 <code>nodejs</code> 环境中使用），将 <code>react-reconciler</code> 中的运行结果输出到 web 界面上</strong>。在编写 <code>react</code> 应用的代码时，大多数场景下能用到此包的就是一个入口函数 <code>ReactDOM.render(&lt;App/&gt;, document.getElementById(&#39;root&#39;))</code>，其余使用的 api，基本是 <code>react</code> 包提供的</p>
+<h3 id="1-3-react-reconciler"><a href="#1-3-react-reconciler" class="headerlink" title="1.3 react-reconciler"></a>1.3 react-reconciler</h3><p><code>react</code> 得以运行的核心包（综合协调 <code>react-dom</code>，<code>react</code>，<code>scheduler</code> 各包之间的调用与配合）。<strong>管理 <code>react</code> 应用状态的输入和结果的输出。将输入信号最终转换成输出信号传递给渲染器</strong></p>
+<ul>
+<li>接受输入（<code>scheduleUpdateOnFiber</code>），将 <code>fiber</code> 树生成逻辑封装到一个回调函数中（涉及 <code>fiber</code> 树形结构，<code>fiber.updateQueue</code> 队列，调和算法等）</li>
+<li>把此回调函数（<code>performSyncWorkOnRoot</code> 或 <code>performConcurrentWorkOnRoot</code>）送入 <code>scheduler</code> 进行调度</li>
+<li><code>scheduler</code> 会控制回调函数执行的时机，回调函数执行完成后得到全新的 <code>fiber</code> 树</li>
+<li>再调用渲染器（如 <code>react-dom</code>, <code>react-native</code> 等），将 <code>fiber</code> 树形结构最终反映到界面上</li>
+</ul>
+<h3 id="1-4-scheduler"><a href="#1-4-scheduler" class="headerlink" title="1.4 scheduler"></a>1.4 scheduler</h3><p>调度机制的核心实现，<strong>控制由 <code>react-reconciler</code> 送入的回调函数的执行时机，在 <code>concurrent</code> 模式下可以实现任务分片</strong>。在编写 <code>react</code> 应用的代码时，同样几乎不会直接用到此包提供的 api</p>
+<ul>
+<li>核心任务就是执行回调（回调函数由 <code>react-reconciler</code> 提供）</li>
+<li>通过控制回调函数的执行时机，来达到任务分片的目的，实现可中断渲染（<code>concurrent</code> 模式下才有此特性）</li>
+</ul>
+<h2 id="2-包结构分类"><a href="#2-包结构分类" class="headerlink" title="2. 包结构分类"></a>2. 包结构分类</h2><h3 id="2-1-分类"><a href="#2-1-分类" class="headerlink" title="2.1 分类"></a>2.1 分类</h3><p>可将 <code>react</code> 应用整体结构分为接口层（<code>api</code>）和内核层（<code>core</code>）2 个部分</p>
+<ol>
+<li><p>接口层（<code>api</code>）：<code>react</code> 包，平时在开发过程中使用的绝大部分 <code>api</code> 均来自此包（不是所有）。 在 <code>react</code> 启动之后，正常可以改变渲染的基本操作有 3 个</p>
+<ul>
+<li><code>class</code> 组件中使用 <code>setState()</code></li>
+<li><code>function</code> 组件里面使用 <code>hook</code>，并发起 <code>dispatchAction</code> 去改变 <code>hook</code> 对象</li>
+<li>改变 <code>context</code>（其实也需要 <code>setState</code> 或 <code>dispatchAction</code> 的辅助才能改变）</li>
+<li>以上 <code>setState</code> 和 <code>dispatchAction</code> 都由 <code>react</code> 包直接暴露。所以要想 <code>react</code> 工作，基本上是调用 <code>react</code> 包的 <code>api</code> 去与其他包进行交互</li>
+</ul>
+</li>
+<li><p>内核层（<code>core</code>）</p>
+<ul>
+<li><p>调度器（<code>scheduler</code>），核心职责只有 1 个，就是执行回调</p>
+<ul>
+<li>把 <code>react-reconciler</code> 提供的回调函数，包装到一个任务对象中</li>
+<li>在内部维护一个任务队列，优先级高的排在最前面</li>
+<li>循环消费任务队列，直到队列清空</li>
+</ul>
+</li>
+<li><p>构造器（<code>react-reconciler</code>），有 3 个核心职责</p>
+<ul>
+<li>装载渲染器，渲染器必须实现 <code>HostConfig</code> 协议（如：<code>react-dom</code>），保证在需要的时候，能够正确调用渲染器的 <code>api</code>，生成实际节点（如：<code>dom</code> 节点）</li>
+<li>接收 <code>react-dom</code> 包（初次 <code>render</code>）和 <code>react</code> 包（后续更新 <code>setState</code>）发起的更新请求</li>
+<li>将 <code>fiber</code> 树的构造过程包装在一个回调函数中，并将此回调函数传入到 <code>scheduler</code> 包等待调度</li>
+</ul>
+</li>
+<li><p>渲染器（<code>react-dom</code>），有 2 个核心职责</p>
+<ul>
+<li>引导 <code>react</code> 应用的启动（通过 <code>ReactDOM.render</code>）</li>
+<li>实现 <code>HostConfig</code> 协议，能够将 <code>react-reconciler</code> 包构造出来的 <code>fiber</code> 树表现出来，生成 <code>dom</code> 节点（<code>CSR</code>），生成字符串（<code>SSR</code>）</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/README.md#practical-examples"><code>HostConfig</code> 协议</a>：本质上是一个对象，该对象描述了如何在宿主环境中实现某些操作</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">HostConfig</span> = &#123;</span><br><span class="line">  <span class="title function_">createInstance</span>(<span class="params">type, props</span>) &#123;</span><br><span class="line">    <span class="comment">// e.g. DOM renderer returns a DOM node</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="attr">supportsMutation</span>: <span class="literal">true</span>, <span class="comment">// it works by mutating nodes</span></span><br><span class="line">  <span class="title function_">appendChild</span>(<span class="params">parent, child</span>) &#123;</span><br><span class="line">    <span class="comment">// e.g. DOM renderer would call .appendChild() here</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-关系"><a href="#2-2-关系" class="headerlink" title="2.2 关系"></a>2.2 关系</h3><p><img src="/../images/react-base-1.png"></p>
+<blockquote>
+<p>解释<br><strong>红色</strong>方块代表入口函数，<strong>绿色</strong>方块代表出口函数<br><code>package</code> 之间的调用脉络就是通过板块间的入口和出口函数连接起来的</p>
+</blockquote>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#React" >
+    <span class="tag-code">React</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/React-hook_3/">
+        <span class="nav-arrow">← </span>
+        
+          React-hook（3）
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Utterances START -->
+      <div id="utterances"></div>
+      <script src="https://utteranc.es/client.js"
+        repo=""
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async></script>    
+      <!-- Utterances END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-%E5%8C%85%E8%AF%B4%E6%98%8E"><span class="toc-nav-text">1. 包说明</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-1-react"><span class="toc-nav-text">1.1 react</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-2-react-dom"><span class="toc-nav-text">1.2 react-dom</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-3-react-reconciler"><span class="toc-nav-text">1.3 react-reconciler</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-4-scheduler"><span class="toc-nav-text">1.4 scheduler</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-%E5%8C%85%E7%BB%93%E6%9E%84%E5%88%86%E7%B1%BB"><span class="toc-nav-text">2. 包结构分类</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-1-%E5%88%86%E7%B1%BB"><span class="toc-nav-text">2.1 分类</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-2-%E5%85%B3%E7%B3%BB"><span class="toc-nav-text">2.2 关系</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://lemonshi.github.io/React-base-1/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', '/css/images/error_icon.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== '/css/images/error_icon.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2024 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    <!-- Theme by <a target="_blank" rel="noopener" href="https://github.com/yanm1ng">yanm1ng</a> -->
+    
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      hljs.configure({useBR: true});
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>
