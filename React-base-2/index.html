@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="wu-note">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      React-base（2） | wu-note
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+  
+  
+<meta name="generator" content="Hexo 7.1.1"></head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>wu-note</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+    
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>React-base（2）</h2>
+  <p class="post-date">2024-04-16</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="1-workLoop"><a href="#1-workLoop" class="headerlink" title="1. workLoop"></a>1. workLoop</h2><p><img src="/../images/react-base-1.png"></p>
+<h3 id="1-1-任务调度"><a href="#1-1-任务调度" class="headerlink" title="1.1 任务调度"></a>1.1 任务调度</h3><p><code>scheduler</code> 任务调度是 <code>react</code> 应用得以运行的保证，它需要循环调用，并控制所有任务（<code>task</code>）的调度</p>
+<h3 id="1-2-fiber-树构造循环"><a href="#1-2-fiber-树构造循环" class="headerlink" title="1.2 fiber 树构造循环"></a>1.2 fiber 树构造循环</h3><p>控制 fiber 树的构造，整个过程是一个深度优先遍历</p>
+<blockquote>
+<p><strong>深度优先遍历（Depth-First-Search，DFS）</strong>：是一种用于遍历或搜索树或图的算法</p>
+</blockquote>
+<h2 id="2-区别与联系"><a href="#2-区别与联系" class="headerlink" title="2. 区别与联系"></a>2. 区别与联系</h2><h3 id="2-1-区别"><a href="#2-1-区别" class="headerlink" title="2.1 区别"></a>2.1 区别</h3><ol>
+<li><p>任务调度</p>
+<ul>
+<li>任务调度循环是以二叉堆为数据结构，循环执行堆的顶点，直到堆被清空</li>
+<li>任务调度循环的逻辑非常独立，它调度的是每一个任务（<code>task</code>），而不关心这个任务具体是干什么的（甚至可以将 <code>Scheduler</code> 包脱离 <code>react</code> 使用），具体任务其实就是执行回调函数 <code>performSyncWorkOnRoot</code> 或 <code>performConcurrentWorkOnRoot</code></li>
+</ul>
+</li>
+<li><p>fiber 树构造循环</p>
+<ul>
+<li><code>fiber</code> 构造循环是以树为数据结构，从上至下执行<strong>深度优先遍历</strong></li>
+<li><code>fiber</code> 构造循环的逻辑偏向具体实现，它只是任务（<code>task</code>）的一部分，如 <code>performSyncWorkOnRoot</code> 包括：<code>fiber</code> 树的构造，<code>DOM</code> 渲染，调度检测），只负责 <code>fiber</code> 树的构造</li>
+</ul>
+</li>
+</ol>
+<h3 id="2-2-联系"><a href="#2-2-联系" class="headerlink" title="2.2 联系"></a>2.2 联系</h3><p><code>fiber</code> 构造循环是任务调度循环中的任务（<code>task</code>）的一部分。它们是从属关系，每个任务都会重新构造一个 <code>fiber</code> 树</p>
+<h2 id="3-核心逻辑"><a href="#3-核心逻辑" class="headerlink" title="3. 核心逻辑"></a>3. 核心逻辑</h2><p>react 运行的核心逻辑，即将<strong>输入转换为输出</strong>的核心步骤，实际上就是围绕这两大工作循环进行展开</p>
+<p>可以将 <code>react</code> 运行的主干逻辑进行概括：</p>
+<ol>
+<li><strong>输入</strong>：将每一次更新，如：新增，删除，修改节点之后，视为一次更新需求（目的是要更新 DOM 节点）</li>
+<li><strong>注册调度任务</strong>：<code>react-reconciler</code> 收到更新需求之后，并不会立即构造 <code>fiber</code> 树，而是去调度中心 <code>scheduler</code> 注册一个新任务 <code>task</code>，即把更新需求转换成一个 <code>task</code></li>
+<li><strong>执行调度任务（输出）</strong>：调度中心 <code>scheduler</code> 通过任务调度循环来执行 <code>task</code>（<code>task</code> 的执行过程又回到了 <code>react-reconciler</code> 包中）<ul>
+<li><code>fiber</code> 构造循环是 <code>task</code> 的实现环节之一，循环完成之后会构造出最新的 <code>fiber</code> 树</li>
+<li><code>commitRoot</code> 是 <code>task</code> 的实现环节之二，把最新的 <code>fiber</code> <code>树最终渲染到页面上，task</code> 完成</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>主干逻辑就是输入到输出这一条链路，为了更好的性能，如：批量更新，可中断渲染等功能，react 在输入到输出的链路上做了很多优化策略，比如：本文讲述的任务调度循环和 fiber 构造循环相互配合就可以实现可中断渲染</p>
+</blockquote>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#React" >
+    <span class="tag-code">React</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/React-base-1/">
+        <span class="nav-arrow">← </span>
+        
+          React-base（1）
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Utterances START -->
+      <div id="utterances"></div>
+      <script src="https://utteranc.es/client.js"
+        repo=""
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async></script>    
+      <!-- Utterances END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-workLoop"><span class="toc-nav-text">1. workLoop</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-1-%E4%BB%BB%E5%8A%A1%E8%B0%83%E5%BA%A6"><span class="toc-nav-text">1.1 任务调度</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-2-fiber-%E6%A0%91%E6%9E%84%E9%80%A0%E5%BE%AA%E7%8E%AF"><span class="toc-nav-text">1.2 fiber 树构造循环</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-%E5%8C%BA%E5%88%AB%E4%B8%8E%E8%81%94%E7%B3%BB"><span class="toc-nav-text">2. 区别与联系</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-1-%E5%8C%BA%E5%88%AB"><span class="toc-nav-text">2.1 区别</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-2-%E8%81%94%E7%B3%BB"><span class="toc-nav-text">2.2 联系</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-%E6%A0%B8%E5%BF%83%E9%80%BB%E8%BE%91"><span class="toc-nav-text">3. 核心逻辑</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://lemonshi.github.io/React-base-2/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', '/css/images/error_icon.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== '/css/images/error_icon.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2024 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    <!-- Theme by <a target="_blank" rel="noopener" href="https://github.com/yanm1ng">yanm1ng</a> -->
+    
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      hljs.configure({useBR: true});
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>
