@@ -134,7 +134,7 @@ class App_Content extends react_default.a.Component {
 - `ReactElement` 链表和 `fiber` 树是以 `props.children` 为单位先后交替生成的，当 ReactElement 链表构造完毕，`fiber` 树也随后构造完毕
 - **reconciler 阶段**会根据 `ReactElement` 的类型生成对应的 `fiber` 节点（**不是一一对应，比如：`Fragment` 类型的组件在生成 `fiber` 节点的时候会略过**）
 
-## 2. （wip）Fiber 对象
+## 2. Fiber 对象
 
 ```ts
 // 一个 Fiber 对象代表一个即将渲染或者已经渲染的组件(ReactElement), 一个组件可能对应两个fiber(current 和 WorkInProgress)
@@ -182,6 +182,30 @@ export type Fiber = {
   treeBaseDuration?: number, // 生成子树所消耗的时间的总和
 };
 ```
+
+属性解释：
+
+- `fiber.tag`：**表示 fiber 类型**，根据 `ReactElement` 组件的 `type` 进行生成，在 `react` 内部共定义了 25 种 tag
+- `fiber.key`：和 `ReactElement` 组件的 `key` 一致
+- `fiber.elementType`：一般来讲和 `ReactElement` 组件的 `type` 一致
+- `fiber.type`：一般来讲和 `fiber.elementType` 一致。一些特殊情形下，比如：在开发环境下为了兼容热更新（`HotReloading`），会对 `function`，`class`，`ForwardRef` 类型的 `ReactElement` 做一定的处理，这种情况会区别于 `fiber.elementType`
+- `fiber.stateNode`：与 `fiber` 关联的局部状态节点，比如: `HostComponent` 类型指向与 `fiber` 节点对应的 `dom` 节点；根节点 `fiber.stateNode` 指向的是` FiberRoot``；class` 类型节点其 `stateNode` 指向的是 `class` 实例
+- `fiber.return`：**指向父节点**
+- `fiber.child`：**指向第一个子节点**
+- `fiber.sibling`：**指向下一个兄弟节点**
+- `fiber.index`：**`fiber` 在兄弟节点中的索引**，如果是单节点默认为 0
+- `fiber.ref`：指向在 `ReactElement` 组件上设置的 `ref`（string 类型的 ref 除外，这种类型的 ref 已经不推荐使用，reconciler 阶段会将 string 类型的 ref 转换成一个 function 类型）
+- `fiber.pendingProps`：**输入属性**，从 `ReactElement` 对象传入的 `props`。用于和 `fiber.memoizedProps` 比较可以得出属性是否变动
+- `fiber.memoizedProps`：**上一次生成子节点时用到的属性**，生成子节点之后保持在内存中。向下生成子节点之前叫做 `pendingProps`，生成子节点之后会把 `pendingProps` 赋值给 `memoizedProps` 用于下一次比较。`pendingProps` 和 `memoizedProps` 比较可以得出属性是否变动
+- `fiber.updateQueue`：**存储 `update` 更新对象的队列**，每一次发起更新，都需要在该队列上创建一个 `update 对象`
+- `fiber.memoizedState`：**上一次生成子节点之后保持在内存中的局部状态**
+- `fiber.flags`：标志位，副作用标记（在 16.x 版本中叫做 effectTag，相应 pr），在 ReactFiberFlags.js 中定义了所有的标志位。**reconciler 阶段**会将所有拥有 `flags` 标记的节点添加到副作用链表中，等待 **commit 阶段**的处理
+- `fiber.nextEffect`：**单向链表**，指向下一个有副作用的 `fiber` 节点
+- `fiber.firstEffect`：指向副作用链表中的**第一个 `fiber` 节点**
+- `fiber.lastEffect`：指向副作用链表中的**最后一个 `fiber` 节点**
+- `fiber.lanes`：**本 `fiber` 节点所属的优先级**，创建 `fiber` 的时候设置
+- `fiber.childLanes`：**子节点所属的优先级**
+- `fiber.alternate`：指向内存中的另一个 `fiber`，每个被更新过 `fiber` 节点在内存中都是**成对出现**（`current` 和 `workInProgress`）
 
 ![](../images/react-base-3.png)
 
