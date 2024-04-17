@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="wu-note">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      React-base（3） | wu-note
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+  
+  
+<meta name="generator" content="Hexo 7.1.1"></head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>wu-note</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+    
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>React-base（3）</h2>
+  <p class="post-date">2024-04-17</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="1-ReactElement-对象"><a href="#1-ReactElement-对象" class="headerlink" title="1. ReactElement 对象"></a>1. ReactElement 对象</h2><p>所有采用 <code>jsx</code> 语法书写的节点，都会被编译器转换，最终会以 <code>React.createElement(...)</code> 的方式，创建出来一个与之对应的 <code>ReactElement</code> 对象</p>
+<p>ReactElement 对象的数据结构如下：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">type</span> <span class="title class_">ReactElement</span> = &#123;</span><br><span class="line">  <span class="comment">// 用于辨别 ReactElement 对象</span></span><br><span class="line">  <span class="attr">$typeof</span>: <span class="built_in">any</span>,</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 内部属性</span></span><br><span class="line">  <span class="attr">type</span>: <span class="built_in">any</span>, <span class="comment">// 表明其种类</span></span><br><span class="line">  <span class="attr">key</span>: <span class="built_in">any</span>,</span><br><span class="line">  <span class="attr">ref</span>: <span class="built_in">any</span>,</span><br><span class="line">  <span class="attr">props</span>: <span class="built_in">any</span>,</span><br><span class="line"></span><br><span class="line">  <span class="comment">// ReactFiber 记录创建本对象的Fiber节点, 还未与 Fiber 树关联之前, 该属性为 null</span></span><br><span class="line">  <span class="attr">_owner</span>: <span class="built_in">any</span>,</span><br><span class="line"></span><br><span class="line">  <span class="comment">// __DEV__ dev 环境下的一些额外信息, 如文件路径, 文件名, 行列信息等</span></span><br><span class="line">  <span class="attr">_store</span>: &#123; <span class="attr">validated</span>: <span class="built_in">boolean</span>, ... &#125;,</span><br><span class="line">  <span class="attr">_self</span>: <span class="title class_">React</span>$Element&lt;<span class="built_in">any</span>&gt;,</span><br><span class="line">  <span class="attr">_shadowChildren</span>: <span class="built_in">any</span>,</span><br><span class="line">  <span class="attr">_source</span>: <span class="title class_">Source</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中有 2 个属性需要注意：</p>
+<ul>
+<li><code>key</code> 属性在 <strong>reconciler 阶段</strong>会用到，目前只需要知道所有的 <code>ReactElement</code> 对象都有 <code>key</code> 属性（且其默认值是 <code>null</code>，这点十分重要，在 <strong>diff 算法</strong>中会使用到）</li>
+<li><code>type</code> 属性决定了节点的种类<ul>
+<li>它的值可以是<strong>字符串</strong>（代表 <code>div</code>，<code>span</code> 等 <strong>dom 节点</strong>），函数（代表 <code>function</code>，<code>class</code> 等节点），或者 <code>react</code> 内部定义的节点类型（<code>portal</code>，<code>context</code>，<code>fragment</code> 等）</li>
+<li>在 <code>reconciler</code> 阶段，会根据 <code>type</code> 执行不同的逻辑<ul>
+<li>如 <code>type</code> 是一个字符串类型，则直接使用</li>
+<li>如 <code>type</code> 是一个 <code>ReactComponent</code> 类型，则会调用其 <code>render</code> 方法获取子节点</li>
+<li>如 <code>type</code> 是一个 <code>function</code> 类型，则会调用该方法获取子节点</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="1-1-ReactComponent-对象"><a href="#1-1-ReactComponent-对象" class="headerlink" title="1.1 ReactComponent 对象"></a>1.1 ReactComponent 对象</h3><p>对于 <code>ReactElement</code> 来讲，<code>ReactComponent</code> 仅仅是诸多 <code>type</code> 类型中的一种</p>
+<p>一个简单的示例，通过查看编译后的代码来说明：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">App</span> <span class="keyword">extends</span> <span class="title class_ inherited__">React.Component</span> &#123;</span><br><span class="line">  <span class="title function_">render</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      <span class="language-xml"><span class="tag">&lt;<span class="name">div</span> <span class="attr">className</span>=<span class="string">&quot;app&quot;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">header</span>&gt;</span>header<span class="tag">&lt;/<span class="name">header</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">Content</span> /&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">footer</span>&gt;</span>footer<span class="tag">&lt;/<span class="name">footer</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Content</span> <span class="keyword">extends</span> <span class="title class_ inherited__">React.Component</span> &#123;</span><br><span class="line">  <span class="title function_">render</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      <span class="language-xml"><span class="tag">&lt;<span class="name">React.Fragment</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">p</span>&gt;</span>1<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">p</span>&gt;</span>2<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">p</span>&gt;</span>3<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">React.Fragment</span>&gt;</span></span></span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="title class_">App</span></span><br></pre></td></tr></table></figure>
+
+<p>编译之后的代码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">App_App</span> <span class="keyword">extends</span> <span class="title class_ inherited__">react_default.a.Component</span> &#123;</span><br><span class="line">  <span class="title function_">render</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="comment">/*#__PURE__*/</span> react_default.<span class="property">a</span>.<span class="title function_">createElement</span>(</span><br><span class="line">      <span class="string">&#x27;div&#x27;</span>,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">className</span>: <span class="string">&#x27;app&#x27;</span>,</span><br><span class="line">      &#125; <span class="comment">/*#__PURE__*/</span>,</span><br><span class="line">      react_default.<span class="property">a</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;header&#x27;</span>, <span class="literal">null</span>, <span class="string">&#x27;header&#x27;</span>) <span class="comment">/*#__PURE__*/</span>,</span><br><span class="line"></span><br><span class="line">      <span class="comment">// 此处直接将Content传入, 是一个指针传递</span></span><br><span class="line">      react_default.<span class="property">a</span>.<span class="title function_">createElement</span>(<span class="title class_">App</span>_Content, <span class="literal">null</span>) <span class="comment">/*#__PURE__*/</span>,</span><br><span class="line">      react_default.<span class="property">a</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;footer&#x27;</span>, <span class="literal">null</span>, <span class="string">&#x27;footer&#x27;</span>)</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">App_Content</span> <span class="keyword">extends</span> <span class="title class_ inherited__">react_default.a.Component</span> &#123;</span><br><span class="line">  <span class="title function_">render</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="comment">/*#__PURE__*/</span> react_default.<span class="property">a</span>.<span class="title function_">createElement</span>(</span><br><span class="line">      react_default.<span class="property">a</span>.<span class="property">Fragment</span>,</span><br><span class="line">      <span class="literal">null</span> <span class="comment">/*#__PURE__*/</span>,</span><br><span class="line">      react_default.<span class="property">a</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;p&#x27;</span>, <span class="literal">null</span>, <span class="string">&#x27;1&#x27;</span>),</span><br><span class="line">      <span class="comment">/*#__PURE__*/</span></span><br><span class="line"></span><br><span class="line">      react_default.<span class="property">a</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;p&#x27;</span>, <span class="literal">null</span>, <span class="string">&#x27;2&#x27;</span>),</span><br><span class="line">      <span class="comment">/*#__PURE__*/</span></span><br><span class="line"></span><br><span class="line">      react_default.<span class="property">a</span>.<span class="title function_">createElement</span>(<span class="string">&#x27;p&#x27;</span>, <span class="literal">null</span>, <span class="string">&#x27;3&#x27;</span>)</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>createElement</code> 函数的第一个参数将作为创建 <code>ReactElement</code> 的 <code>type</code>。可以看到 <code>Content</code> 这个变量被编译器命名为 <code>App_Content</code>，并作为第一个参数（引用传递），传入了 <code>createElement</code></p>
+<p>但是由于 <code>ReactComponent</code> 是 <code>class</code> 类型，自有它的特殊性：</p>
+<ul>
+<li><code>ReactComponent</code> 是 <code>class</code> 类型，继承父类 <code>Component</code>，拥有特殊的方法（<code>setState</code>，<code>forceUpdate</code>）和特殊的属性（<code>context</code>，<code>updater</code> 等）</li>
+<li>在 <strong>reconciler 阶段</strong>，会依据 <code>ReactElement</code> 对象的特征，生成对应的 <code>fiber</code> 节点。当识别到 <code>ReactElement</code> 对象是 <code>class</code> 类型的时候，会触发 <code>ReactComponent</code> 对象的<strong>生命周期</strong>，并调用其 <code>render</code> 方法，生成 <code>ReactElement</code> 子节点</li>
+</ul>
+<blockquote>
+<p>如果在 <code>function</code> 类型的组件中没有使用 <code>Hook</code>，如：<code>useState</code>，<code>useEffect</code> 等，在 <strong>reconciler 阶段</strong>所有有关 <code>Hook</code> 的处理都会略过，最后调用该 <code>function</code> 拿到子节点 <code>ReactElement</code></p>
+</blockquote>
+<h3 id="1-2-ReactElement-内存结构"><a href="#1-2-ReactElement-内存结构" class="headerlink" title="1.2 ReactElement 内存结构"></a>1.2 ReactElement 内存结构</h3><p><strong>reconciler 阶段</strong>完成之后才会形成完整的结构，如下：</p>
+<p><img src="/../images/react-base-2.png"></p>
+<p>特别说明：</p>
+<ul>
+<li><code>class</code> 和 <code>function</code> 类型的组件，其子节点是在 <code>render</code> 之后（<strong>reconciler 阶段</strong>）才生成的。此处只是单独表示 <code>ReactElement</code> 的数据结构</li>
+<li>父级对象和子级对象之间是通过 <code>props.children</code> 属性进行关联的（与 <strong>fiber 树</strong>不同）</li>
+<li><code>ReactElement</code> 虽然不能算是一个严格的树，也不能算是一个严格的链表。它的生成过程是自顶向下的，是所有组件节点的总和</li>
+<li><code>ReactElement</code> 链表和 <code>fiber</code> 树是以 <code>props.children</code> 为单位先后交替生成的，当 ReactElement 链表构造完毕，<code>fiber</code> 树也随后构造完毕</li>
+<li><strong>reconciler 阶段</strong>会根据 <code>ReactElement</code> 的类型生成对应的 <code>fiber</code> 节点（<strong>不是一一对应，比如：<code>Fragment</code> 类型的组件在生成 <code>fiber</code> 节点的时候会略过</strong>）</li>
+</ul>
+<h2 id="2-（wip）Fiber-对象"><a href="#2-（wip）Fiber-对象" class="headerlink" title="2. （wip）Fiber 对象"></a>2. （wip）Fiber 对象</h2><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 一个 Fiber 对象代表一个即将渲染或者已经渲染的组件(ReactElement), 一个组件可能对应两个fiber(current 和 WorkInProgress)</span></span><br><span class="line"><span class="comment">// 单个属性的解释在后文(在注释中无法添加超链接)</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">type</span> <span class="title class_">Fiber</span> = &#123;</span><br><span class="line">  <span class="attr">tag</span>: <span class="title class_">WorkTag</span>,</span><br><span class="line">  <span class="attr">key</span>: <span class="literal">null</span> | <span class="built_in">string</span>,</span><br><span class="line">  <span class="attr">elementType</span>: <span class="built_in">any</span>,</span><br><span class="line">  <span class="attr">type</span>: <span class="built_in">any</span>,</span><br><span class="line">  <span class="attr">stateNode</span>: <span class="built_in">any</span>,</span><br><span class="line">  <span class="attr">return</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">child</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">sibling</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span>,</span><br><span class="line">  <span class="attr">index</span>: <span class="built_in">number</span>,</span><br><span class="line">  <span class="attr">ref</span>:</span><br><span class="line">    | <span class="literal">null</span></span><br><span class="line">    | ((<span class="function">(<span class="params">handle: mixed</span>) =&gt;</span> <span class="built_in">void</span>) &amp; &#123; <span class="attr">_stringRef</span>: ?<span class="built_in">string</span>, ... &#125;)</span><br><span class="line">    | <span class="title class_">RefObject</span>,</span><br><span class="line">  <span class="attr">pendingProps</span>: <span class="built_in">any</span>, <span class="comment">// 从 ReactElement 对象传入的 props 用于和 fiber.memoizedProps 比较可以得出属性是否变动</span></span><br><span class="line">  <span class="attr">memoizedProps</span>: <span class="built_in">any</span>, <span class="comment">// 上一次生成子节点时用到的属性, 生成子节点之后保持在内存中</span></span><br><span class="line">  <span class="attr">updateQueue</span>: mixed, <span class="comment">// 存储state更新的队列, 当前节点的state改动之后, 都会创建一个update对象添加到这个队列中.</span></span><br><span class="line">  <span class="attr">memoizedState</span>: <span class="built_in">any</span>, <span class="comment">// 用于输出的state, 最终渲染所使用的state</span></span><br><span class="line">  <span class="attr">dependencies</span>: <span class="title class_">Dependencies</span> | <span class="literal">null</span>, <span class="comment">// 该fiber节点所依赖的(contexts, events)等</span></span><br><span class="line">  <span class="attr">mode</span>: <span class="title class_">TypeOfMode</span>, <span class="comment">// 二进制位Bitfield,继承至父节点,影响本fiber节点及其子树中所有节点. 与react应用的运行模式有关(有ConcurrentMode, BlockingMode, NoMode等选项).</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// Effect 副作用相关</span></span><br><span class="line">  <span class="attr">flags</span>: <span class="title class_">Flags</span>, <span class="comment">// 标志位</span></span><br><span class="line">  <span class="attr">subtreeFlags</span>: <span class="title class_">Flags</span>, <span class="comment">//替代16.x版本中的 firstEffect, nextEffect. 当设置了 enableNewReconciler=true才会启用</span></span><br><span class="line">  <span class="attr">deletions</span>: <span class="title class_">Array</span>&lt;<span class="title class_">Fiber</span>&gt; | <span class="literal">null</span>, <span class="comment">// 存储将要被删除的子节点. 当设置了 enableNewReconciler=true才会启用</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">nextEffect</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span>, <span class="comment">// 单向链表, 指向下一个有副作用的fiber节点</span></span><br><span class="line">  <span class="attr">firstEffect</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span>, <span class="comment">// 指向副作用链表中的第一个fiber节点</span></span><br><span class="line">  <span class="attr">lastEffect</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span>, <span class="comment">// 指向副作用链表中的最后一个fiber节点</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 优先级相关</span></span><br><span class="line">  <span class="attr">lanes</span>: <span class="title class_">Lanes</span>, <span class="comment">// 本fiber节点的优先级</span></span><br><span class="line">  <span class="attr">childLanes</span>: <span class="title class_">Lanes</span>, <span class="comment">// 子节点的优先级</span></span><br><span class="line">  <span class="attr">alternate</span>: <span class="title class_">Fiber</span> | <span class="literal">null</span>, <span class="comment">// 指向内存中的另一个fiber, 每个被更新过fiber节点在内存中都是成对出现(current和workInProgress)</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// 性能统计相关(开启enableProfilerTimer后才会统计)</span></span><br><span class="line">  <span class="comment">// react-dev-tool会根据这些时间统计来评估性能</span></span><br><span class="line">  actualDuration?: <span class="built_in">number</span>, <span class="comment">// 本次更新过程, 本节点以及子树所消耗的总时间</span></span><br><span class="line">  actualStartTime?: <span class="built_in">number</span>, <span class="comment">// 标记本fiber节点开始构建的时间</span></span><br><span class="line">  selfBaseDuration?: <span class="built_in">number</span>, <span class="comment">// 用于最近一次生成本fiber节点所消耗的时间</span></span><br><span class="line">  treeBaseDuration?: <span class="built_in">number</span>, <span class="comment">// 生成子树所消耗的时间的总和</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/react-base-3.png"></p>
+<p>图表解释：</p>
+<ul>
+<li>这里的 <code>fiber</code> 树只是为了和上文中的 <code>ReactElement</code> 链表对照，所以只用观察红色虚线框内的节点。根节点 <code>HostRootFiber</code></li>
+<li>其中 <code>&lt;App/&gt;</code>，<code>&lt;Content/&gt;</code> 为 <code>ClassComponent</code> 类型的 <code>fiber</code> 节点，其余节点都是普通 <code>HostComponent</code> 类型节点</li>
+<li><code>&lt;Content/&gt;</code> 的子节点在 <code>ReactElement</code> 链表中是 <code>React.Fragment</code>，但是在 <code>fiber</code> 树中 <code>React.Fragment</code> 并没有与之对应的 <code>fiber</code> 节点（<strong>reconciler 阶段</strong>对此类型节点做了单独处理，所以 <code>ReactElement</code> 节点和 <code>fiber</code> 节点不是一对一匹配）</li>
+</ul>
+<h3 id="2-1-Update-对象"><a href="#2-1-Update-对象" class="headerlink" title="2.1 Update 对象"></a>2.1 Update 对象</h3><p>在 <code>fiber</code> 对象中有一个属性 <code>fiber.updateQueue</code>，是一个链式队列</p>
+<p><code>Update</code> 对象的数据结构，如下：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">type</span> <span class="title class_">Update</span>&lt;<span class="title class_">State</span>&gt; = &#123;</span><br><span class="line">  <span class="comment">// 发起update事件的时间(17.0.2中作为临时字段, 即将移出)</span></span><br><span class="line">  <span class="attr">eventTime</span>: <span class="built_in">number</span></span><br><span class="line">  <span class="comment">// update所属的优先级</span></span><br><span class="line">  <span class="attr">lane</span>: <span class="title class_">Lane</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">tag</span>: <span class="number">0</span> | <span class="number">1</span> | <span class="number">2</span> | <span class="number">3</span></span><br><span class="line">  <span class="comment">// 载荷, 根据场景可以设置成一个回调函数或者对象</span></span><br><span class="line">  <span class="attr">payload</span>: <span class="built_in">any</span></span><br><span class="line">  <span class="comment">// 回调函数</span></span><br><span class="line">  <span class="attr">callback</span>: (<span class="function">() =&gt;</span> mixed) | <span class="literal">null</span></span><br><span class="line">  <span class="comment">// 指向链表中的下一个, 由于 UpdateQueue 是一个环形链表, 最后一个 update.next 指向第一个 update 对象</span></span><br><span class="line">  <span class="attr">next</span>: <span class="title class_">Update</span>&lt;<span class="title class_">State</span>&gt; | <span class="literal">null</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// =============== UpdateQueue ==============</span></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">SharedQueue</span>&lt;<span class="title class_">State</span>&gt; = &#123;</span><br><span class="line">  <span class="attr">pending</span>: <span class="title class_">Update</span>&lt;<span class="title class_">State</span>&gt; | <span class="literal">null</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">type</span> <span class="title class_">UpdateQueue</span>&lt;<span class="title class_">State</span>&gt; = &#123;</span><br><span class="line">  <span class="attr">baseState</span>: <span class="title class_">State</span></span><br><span class="line">  <span class="attr">firstBaseUpdate</span>: <span class="title class_">Update</span>&lt;<span class="title class_">State</span>&gt; | <span class="literal">null</span></span><br><span class="line">  <span class="attr">lastBaseUpdate</span>: <span class="title class_">Update</span>&lt;<span class="title class_">State</span>&gt; | <span class="literal">null</span></span><br><span class="line">  <span class="attr">shared</span>: <span class="title class_">SharedQueue</span>&lt;<span class="title class_">State</span>&gt;</span><br><span class="line">  <span class="attr">effects</span>: <span class="title class_">Array</span>&lt;<span class="title class_">Update</span>&lt;<span class="title class_">State</span>&gt;&gt; | <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>属性解释：</p>
+<ul>
+<li><code>UpdateQueue</code><ul>
+<li><code>baseState</code>：表示此队列的基础 <code>state</code></li>
+<li><code>firstBaseUpdate</code>：指向基础队列的<strong>队首</strong></li>
+<li><code>lastBaseUpdate</code>：指向基础队列的<strong>队尾</strong></li>
+<li><code>shared</code>：共享队列</li>
+<li><code>effects</code>：用于保存有 <code>callback</code> 回调函数的 <code>update 对象</code>，在 <code>commit</code> 之后, 会依次调用这里的回调函数</li>
+</ul>
+</li>
+<li><code>SharedQueue</code><ul>
+<li><code>pending</code>：指向即将输入的 <code>update</code> 队列。在 <code>class</code> 组件中调用 <code>setState()</code> 之后，会将新的 <code>update</code> 对象添加到这个队列中来</li>
+</ul>
+</li>
+<li><code>Update</code><ul>
+<li><code>eventTime</code>：发起 <code>update</code> 事件的时间（17.0.2 中作为临时字段，即将移出）</li>
+<li><code>lane</code>：<code>update</code> 所属的优先级</li>
+<li><code>tag</code>：表示 <code>update</code> 种类，共 4 种：<code>UpdateState</code>，<code>ReplaceState</code>，<code>ForceUpdate</code>，<code>CaptureUpdate</code></li>
+<li><code>payload</code>：载荷，<code>update</code> 对象真正需要更新的数据，可以设置成一个回调函数或者对象</li>
+<li><code>callback</code>：回调函数。<code>commit</code> 完成之后会调用</li>
+<li><code>next</code>：指向链表中的下一个，由于 <code>UpdateQueue</code> 是一个环形链表，最后一个 <code>update</code>。<code>next</code> 指向第一个 <code>update</code> 对象</li>
+</ul>
+</li>
+</ul>
+<p><code>updateQueue</code> 是 <code>fiber</code> 对象的一个属性，所以不能脱离 <code>fiber</code> 存在。它们之间数据结构和引用关系如下：</p>
+<p><img src="/../images/react-base-4.png"></p>
+<h3 id="2-2-Hook-对象"><a href="#2-2-Hook-对象" class="headerlink" title="2.2 Hook 对象"></a>2.2 Hook 对象</h3><p><code>Hook</code> 用于 <code>function</code> 组件中, 能够保持 <code>function</code> 组件的状态</p>
+<p>其结构如下：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">type</span> <span class="title class_">Hook</span> = &#123;</span><br><span class="line">  <span class="attr">memoizedState</span>: <span class="built_in">any</span></span><br><span class="line">  <span class="attr">baseState</span>: <span class="built_in">any</span></span><br><span class="line">  <span class="attr">baseQueue</span>: <span class="title class_">Update</span>&lt;<span class="built_in">any</span>, <span class="built_in">any</span>&gt; | <span class="literal">null</span></span><br><span class="line">  <span class="attr">queue</span>: <span class="title class_">UpdateQueue</span>&lt;<span class="built_in">any</span>, <span class="built_in">any</span>&gt; | <span class="literal">null</span></span><br><span class="line">  <span class="attr">next</span>: <span class="title class_">Hook</span> | <span class="literal">null</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">Update</span>&lt;S, A&gt; = &#123;</span><br><span class="line">  <span class="attr">lane</span>: <span class="title class_">Lane</span></span><br><span class="line">  <span class="attr">action</span>: A</span><br><span class="line">  <span class="attr">eagerReducer</span>: (<span class="function">(<span class="params">S, A</span>) =&gt;</span> S) | <span class="literal">null</span></span><br><span class="line">  <span class="attr">eagerState</span>: S | <span class="literal">null</span></span><br><span class="line">  <span class="attr">next</span>: <span class="title class_">Update</span>&lt;S, A&gt;</span><br><span class="line">  priority?: <span class="title class_">ReactPriorityLevel</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> <span class="title class_">UpdateQueue</span>&lt;S, A&gt; = &#123;</span><br><span class="line">  <span class="attr">pending</span>: <span class="title class_">Update</span>&lt;S, A&gt; | <span class="literal">null</span></span><br><span class="line">  <span class="attr">dispatch</span>: (<span class="function">(<span class="params">A</span>) =&gt;</span> mixed) | <span class="literal">null</span></span><br><span class="line">  <span class="attr">lastRenderedReducer</span>: (<span class="function">(<span class="params">S, A</span>) =&gt;</span> S) | <span class="literal">null</span></span><br><span class="line">  <span class="attr">lastRenderedState</span>: S | <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>属性解释:</p>
+<ul>
+<li><code>Hook</code><ul>
+<li><code>memoizedState</code>：内存状态，用于输出成最终的 <code>fiber 树</code></li>
+<li><code>baseState</code>：基础状态，当 <code>Hook.queue</code> 更新过后，<code>baseState</code> 也会更新</li>
+<li><code>baseQueue</code>：基础状态队列，在 <strong>reconciler 阶段</strong>会辅助状态合并</li>
+<li><code>queue</code>：指向一个 <code>Update 队列</code></li>
+<li><code>next</code>：指向该 <code>function</code> 组件的下一个 <code>Hook</code> 对象，使得多个 <code>Hook</code> 之间也构成了一个链</li>
+</ul>
+</li>
+<li><code>Hook.queue</code> 和 <code>Hook.baseQueue</code> 是为了保证 <code>Hook</code> 对象能够顺利更新，与上文 <code>fiber.updateQueue</code> 中的 <code>UpdateQueue</code> 和 <code>Update</code> 是<strong>不一样</strong>的</li>
+</ul>
+<p>所以 <code>Hook</code> 也不能脱离 <code>fiber</code> 而存在，它们之间的引用关系如下：</p>
+<p><img src="/../images/react-base-5.png"></p>
+<h2 id="3-Task-对象"><a href="#3-Task-对象" class="headerlink" title="3. Task 对象"></a>3. Task 对象</h2><p><code>scheduler</code> 包负责调度，在内部维护一个任务队列（<code>taskQueue</code>）。这个队列是一个最小堆数组，其中存储了 <code>task</code> 对象。其结构如下：</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> newTask = &#123;</span><br><span class="line">  <span class="attr">id</span>: taskIdCounter++,</span><br><span class="line">  callback,</span><br><span class="line">  priorityLevel,</span><br><span class="line">  startTime,</span><br><span class="line">  expirationTime,</span><br><span class="line">  <span class="attr">sortIndex</span>: -<span class="number">1</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>属性解释:</p>
+<ul>
+<li><code>id</code>：唯一标识</li>
+<li><code>callback</code>：<code>task</code> 最核心的字段，指向 <code>react-reconciler</code> 包所提供的回调函数</li>
+<li><code>priorityLevel</code>：优先级</li>
+<li><code>startTime</code>：一个时间戳，代表 <code>task</code> 的开始时间（创建时间 + 延时时间）</li>
+<li><code>expirationTime</code>：过期时间</li>
+<li><code>sortIndex</code>：控制 <code>task</code> 在队列中的次序，值越小的越靠前</li>
+</ul>
+<p>注意 <code>task</code> 中没有 <code>next</code> 属性, 它不是一个链表，其顺序是通过堆排序来实现的（<strong>小顶堆数组</strong>，始终保证数组中的第一个 <code>task</code> 对象优先级最高）</p>
+<blockquote>
+<p>任务队列是动态的任务池，数据形式上就是一个数组。当然可以根据优先级进行排序，也就是 <code>Array.sort</code>，当有新任务入队后，先排序，然后找出优先级最高的任务执行。但是 <code>Array.sort</code> 的平均时间复杂度是 <code>O(nlogn)</code>，并不是最好的解决方案</p>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/7115981649266868261#heading-0">堆排序</a><br>堆是一种非线性结构，可以把堆看作一棵二叉树，也可以看作一个数组，即：堆就是利用完全二叉树结构来维护的一维数组<br>堆可以分为大顶堆和小顶堆</p>
+<ul>
+<li>大顶堆：每个结点的值都大于或等于其左右孩子结点的值。</li>
+<li>小顶堆：每个结点的值都小于或等于其左右孩子结点的值。</li>
+</ul>
+<p>如果是排序，求升序用大顶堆，求降序用小顶堆</p>
+<p>初始化建堆时间复杂度：O(n)<br>取出最大&#x2F;小元素后修改堆：O(nlogn)</p>
+</blockquote>
+<p><img src="/../images/react-base-6.png"></p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#React" >
+    <span class="tag-code">React</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/React-base-2/">
+        <span class="nav-arrow">← </span>
+        
+          React-base（2）
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Utterances START -->
+      <div id="utterances"></div>
+      <script src="https://utteranc.es/client.js"
+        repo=""
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async></script>    
+      <!-- Utterances END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-ReactElement-%E5%AF%B9%E8%B1%A1"><span class="toc-nav-text">1. ReactElement 对象</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-1-ReactComponent-%E5%AF%B9%E8%B1%A1"><span class="toc-nav-text">1.1 ReactComponent 对象</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-2-ReactElement-%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84"><span class="toc-nav-text">1.2 ReactElement 内存结构</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-%EF%BC%88wip%EF%BC%89Fiber-%E5%AF%B9%E8%B1%A1"><span class="toc-nav-text">2. （wip）Fiber 对象</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-1-Update-%E5%AF%B9%E8%B1%A1"><span class="toc-nav-text">2.1 Update 对象</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-2-Hook-%E5%AF%B9%E8%B1%A1"><span class="toc-nav-text">2.2 Hook 对象</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-Task-%E5%AF%B9%E8%B1%A1"><span class="toc-nav-text">3. Task 对象</span></a></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://lemonshi.github.io/React-base-3/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', '/css/images/error_icon.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== '/css/images/error_icon.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2024 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    <!-- Theme by <a target="_blank" rel="noopener" href="https://github.com/yanm1ng">yanm1ng</a> -->
+    
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      hljs.configure({useBR: true});
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>
