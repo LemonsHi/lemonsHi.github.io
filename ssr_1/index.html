@@ -173,7 +173,7 @@
 </ul>
 <h3 id="3-4-SEO"><a href="#3-4-SEO" class="headerlink" title="3.4 SEO"></a>3.4 SEO</h3><p><code>SSR</code> 对于 <code>SEO</code> 或者搜索引擎爬虫来说，显然是对 <code>CSR</code> 有压倒性的优势的。</p>
 <blockquote>
-<p>搜索引擎优化（Search engine optimization，SEO）是透过了解搜索引擎的运作规则来调整网站，以及提高目的网站在有关搜索引擎内排名的方式。</p>
+<p>搜索引擎优化（Search Engine Optimization，SEO）。SEO 是指从自然搜索结果获得网站流量的技术和过程，是在了解搜索引擎自然排名机制的基础上，对网站进行内部及外部的调整优化，改进网站在搜索引擎中的关键词自然排名，获得更多流量，从而达成网站销售及品牌建设的目标。<br>参考文档：<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903870317985806">前端对于页面 SEO 的一些总结</a></p>
 </blockquote>
 <h2 id="4-SSR-带来的问题"><a href="#4-SSR-带来的问题" class="headerlink" title="4. SSR 带来的问题"></a>4. SSR 带来的问题</h2><h3 id="4-1-Hybration-的性能损耗"><a href="#4-1-Hybration-的性能损耗" class="headerlink" title="4.1 Hybration 的性能损耗"></a>4.1 Hybration 的性能损耗</h3><p>在服务端接受到用户的请求之后，会根据路径创建出组件树，也就是<strong>静态的进行一次页面渲染</strong>，然后将渲染后的组件通过字符串拼接的方式返回到客户端。客户端接到 <code>SSR</code> 响应之后，为了支持恢复页面的交互功能，仍然需要创建出组件树，与 <code>SSR</code> 渲染的 <code>HTML</code> 关联起来，并绑定相关的 <code>DOM</code> 事件，让页面变得可交互，这整个过程被称为 <code>hydration</code>。<code>hydration</code> 主要解决了两个问题：</p>
 <ul>
