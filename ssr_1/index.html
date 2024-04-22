@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="wu-note">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      SSR 相关（1） | wu-note
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+  
+  
+<meta name="generator" content="Hexo 7.1.1"></head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>wu-note</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+    
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>SSR 相关（1）</h2>
+  <p class="post-date">2024-04-22</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="1-CSR"><a href="#1-CSR" class="headerlink" title="1. CSR"></a>1. CSR</h2><p>客户端渲染（Client Side Render，CSR），是指页面并不是基于服务端下发的 <code>HTML</code> 文件来渲染页面，相反，客户端渲染所获取的 <code>HTML</code> 文件，通常是一个<strong>只有根节点的空白页面</strong>，真正执行渲染行为的是挂载到这个 <code>HTML</code> 文件里的 <code>JS</code> 脚本。当用户打开页面的时候，浏览器会先下载一个挂满 <code>JS</code> 脚本的 <code>HTML</code> 文件，然后再去下载并执行这些 <code>JS</code> 脚本，最终通过 <code>JS</code> 脚本的代码去渲染出后续的页面元素，完成整个的渲染流程。</p>
+<p><img src="/../images/react-ssr-1.png"></p>
+<h2 id="2-SSR"><a href="#2-SSR" class="headerlink" title="2. SSR"></a>2. SSR</h2><p>服务端渲染（Server Side Render，SSR），在 SSR 中，服务端会根据用户请求的路径，在服务端一侧就将完整的 <code>HTML</code> 文档拼接好，<strong>而当前的 <code>HTML</code> 文档是具有该页面真正的内容，但是它并不具备任何交互逻辑</strong>。同时，这个 <code>HTML</code> 文档也包含了后续需要执行的 <code>JS</code> 脚本。</p>
+<p>当用户拿到 <code>HTML</code> 文件的时候，此时页面已经是具备可视元素的了（<strong>相比于 CSR 的白屏</strong>），倘若用户需要和页面进行交互的时候（例如点击事件），还需要将文档的 <code>JS</code> 脚本进行下载和执行，将正确的事件处理方法结合到对应的 <code>DOM</code> 节点上，这个过程我们通常称之为 <code>hydration</code>，也就是水合（注水）。</p>
+<p><img src="/../images/react-ssr-2.png"></p>
+<h2 id="3-SSR-与-CSR-对比"><a href="#3-SSR-与-CSR-对比" class="headerlink" title="3. SSR 与 CSR 对比"></a>3. SSR 与 CSR 对比</h2><p><img src="/../images/react-ssr-3.awebp"></p>
+<h3 id="3-1-首屏渲染速度"><a href="#3-1-首屏渲染速度" class="headerlink" title="3.1 首屏渲染速度"></a>3.1 首屏渲染速度</h3><ul>
+<li><p>对于 <code>CSR</code> 来说，在进行 <code>JS</code> 下载和解析的过程中，页面始终是呈一个白屏状态的，如果 <code>JS</code> 的文件过大或者数量过多的话，用户侧的白屏时间会相当长，大大的降低用户的体验。</p>
+</li>
+<li><p>对于 <code>SSR</code> 来说，当用户下载完 <code>HTML</code> 文件之后，页面就已经具备了完整的可视结构了，这对于白屏来说，显然是具备更大的优势的。所以针对于 <code>FCP</code> 来说，<code>SSR</code> 的体验肯定是比 <code>CSR</code> 的要来的更加优秀一些。</p>
+</li>
+</ul>
+<h3 id="3-2-用户可交互时间"><a href="#3-2-用户可交互时间" class="headerlink" title="3.2 用户可交互时间"></a>3.2 用户可交互时间</h3><ul>
+<li>对于 <code>CSR</code> 来说，当页面渲染完成之后，便是立即可交互的。</li>
+<li>对于 <code>SSR</code> 来说，当页面渲染完成之后，还需要等待一个 <code>hydration</code> 的过程，直到这个过程结束之后，页面才是真正可交互的。</li>
+</ul>
+<blockquote>
+<p><code>CSR</code> 和 <code>SSR</code> 的 <code>TTI</code> 时间大概可以总结为：</p>
+<ul>
+<li><code>CSR</code> &#x3D; <code>HTML</code> 下载的时间 + <code>JS</code> 下载和执行的时间</li>
+<li><code>SSR</code> &#x3D; 服务端拼接 <code>HTML</code> 的时间 + <code>HTML</code> 下载的时间 + <code>JS</code> 下载和执行的时间 + <code>Hydration</code></li>
+</ul>
+</blockquote>
+<h3 id="3-3-数据请求的速度"><a href="#3-3-数据请求的速度" class="headerlink" title="3.3 数据请求的速度"></a>3.3 数据请求的速度</h3><ul>
+<li>在 <code>CSR</code> 的渲染方式当中，通常会在页面元素加载之前，进行一个 <code>AJAX</code> 请求，在得到返回的数据之后再进行后续的渲染。</li>
+<li>在 <code>SSR</code> 当中，这个流程也是类似的。但是，虽然流程是类似的，但发出这个数据请求的环境是截然不同的：<ul>
+<li>对于 <code>SSR</code> 来说，服务端的网络环境要优于客户端的环境，内部服务器之间的请求通信路径也更短。</li>
+<li>对于 <code>CSR</code> 来说，用户的网络环境具有一定的不稳定性，且每次请求都得走完完整的 <code>HTTP/HTTPS</code> 的通讯流程，显然是会更慢的。</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-4-SEO"><a href="#3-4-SEO" class="headerlink" title="3.4 SEO"></a>3.4 SEO</h3><p><code>SSR</code> 对于 <code>SEO</code> 或者搜索引擎爬虫来说，显然是对 <code>CSR</code> 有压倒性的优势的。</p>
+<blockquote>
+<p>搜索引擎优化（Search engine optimization，SEO）是透过了解搜索引擎的运作规则来调整网站，以及提高目的网站在有关搜索引擎内排名的方式。</p>
+</blockquote>
+<h2 id="4-SSR-带来的问题"><a href="#4-SSR-带来的问题" class="headerlink" title="4. SSR 带来的问题"></a>4. SSR 带来的问题</h2><h3 id="4-1-Hybration-的性能损耗"><a href="#4-1-Hybration-的性能损耗" class="headerlink" title="4.1 Hybration 的性能损耗"></a>4.1 Hybration 的性能损耗</h3><p>在服务端接受到用户的请求之后，会根据路径创建出组件树，也就是<strong>静态的进行一次页面渲染</strong>，然后将渲染后的组件通过字符串拼接的方式返回到客户端。客户端接到 <code>SSR</code> 响应之后，为了支持恢复页面的交互功能，仍然需要创建出组件树，与 <code>SSR</code> 渲染的 <code>HTML</code> 关联起来，并绑定相关的 <code>DOM</code> 事件，让页面变得可交互，这整个过程被称为 <code>hydration</code>。<code>hydration</code> 主要解决了两个问题：</p>
+<ul>
+<li>我们需要哪些事件处理程序？事件处理程序是一个包含事件行为的闭包。如果用户触发此事件，则应该发生这种情况。</li>
+<li>我们需要将这些事件处理方法添加到哪个 <code>DOM</code> 节点？</li>
+</ul>
+<p>而对于事件处理程序来说，通常内部都会对整个应用的状态进行处理，<code>hydration</code> 的过程实际上也就是利用重新执行组件代码的方法，来让静态的 <code>HTML</code> 字符串恢复这个状态。这里的状态实际上指的是两种：</p>
+<ul>
+<li><code>APP_STATE</code>：<strong>应用程序的状态</strong>。简单来说应用程序的状态就是 <code>HTML</code> 事件中的各个状态事件，如果不存在这些事件状态那么所有的内容都是没有任何交互效果的。</li>
+<li><code>FRAMEWORK_STATE</code>：<strong>框架内部状态</strong>。通常我们会利用诸如 <code>React</code> 或者 <code>Vue</code> 等框架进行接替渲染。如果没有 <code>FRAMETER_STATE</code>，框架内部就不知道应该更新哪些 <code>DOM</code> 节点，也不知道应该在什么时候更新它们。</li>
+</ul>
+<p>所以，我们需要注意到，恢复 <code>HTML</code> 的交互性，或者说恢复 <code>HTML</code> 的状态实际上是一种纯粹开销的动作。<strong>因为执行组件代码，生成组件树和对应的状态这个流程实际上在服务端已经走过一遍，只不过在下发到客户端的时候，这些信息被丢失了而已</strong>。如果服务器将组件树的状态和交互信息以序列化的形式，将其与 <code>HTML</code> 一起发送给客户端，就可以避免发生或者延迟这个 <code>hydration</code> 的过程，新框架 <code>Qwik</code> 实际上就是这么做的。回到问题本身， <strong><code>hydration</code> 所需加载、执行的 <code>JavaScript</code> 代码不见得比 <code>CSR</code> 模式少多少，这部分工作在客户端执行，受限于用户设备的性能，在较差的设备下可能会造成可感知的不可交互时间</strong>：</p>
+<ul>
+<li><code>CSR</code>：可交互但是没有数据（还在异步请求数据，可能会持续很长）</li>
+<li><code>SSR</code>：有数据但是不可交互（拉到 <code>JS</code> 后开始 <code>hydrate</code> 的过程，能看到内容但是不可交互，一般不会持续很长）</li>
+</ul>
+<p>富交互的场景下，后者不一定比前者用户体验更好。</p>
+<h3 id="4-2-服务的稳定性和性能要求"><a href="#4-2-服务的稳定性和性能要求" class="headerlink" title="4.2 服务的稳定性和性能要求"></a>4.2 服务的稳定性和性能要求</h3><p>与客户端程序相比，服务端程序对稳定性和性能的要求严苛得多，例如：</p>
+<ul>
+<li>稳定性：异常崩溃、死循环</li>
+<li>性能：内存&#x2F;CPU 资源占用、响应速度（网络传输距离等都要考虑在内）</li>
+</ul>
+<p>因此面临后端专业性问， 搭建一个高可用的 <code>SSR</code> 服务不是一件简单的事情，如何应对大流量&#x2F;高并发，如何识别故障，如何降级&#x2F;快速恢复，哪些环节需要加缓存，缓存如何更新等。</p>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#SSR" >
+    <span class="tag-code">SSR</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/feeling_1/">
+        <span class="nav-arrow">← </span>
+        
+          个人感想（1）
+        
+      </a>
+    
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Utterances START -->
+      <div id="utterances"></div>
+      <script src="https://utteranc.es/client.js"
+        repo=""
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async></script>    
+      <!-- Utterances END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-CSR"><span class="toc-nav-text">1. CSR</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-SSR"><span class="toc-nav-text">2. SSR</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-SSR-%E4%B8%8E-CSR-%E5%AF%B9%E6%AF%94"><span class="toc-nav-text">3. SSR 与 CSR 对比</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-1-%E9%A6%96%E5%B1%8F%E6%B8%B2%E6%9F%93%E9%80%9F%E5%BA%A6"><span class="toc-nav-text">3.1 首屏渲染速度</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-2-%E7%94%A8%E6%88%B7%E5%8F%AF%E4%BA%A4%E4%BA%92%E6%97%B6%E9%97%B4"><span class="toc-nav-text">3.2 用户可交互时间</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-3-%E6%95%B0%E6%8D%AE%E8%AF%B7%E6%B1%82%E7%9A%84%E9%80%9F%E5%BA%A6"><span class="toc-nav-text">3.3 数据请求的速度</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-4-SEO"><span class="toc-nav-text">3.4 SEO</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#4-SSR-%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-nav-text">4. SSR 带来的问题</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-1-Hybration-%E7%9A%84%E6%80%A7%E8%83%BD%E6%8D%9F%E8%80%97"><span class="toc-nav-text">4.1 Hybration 的性能损耗</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#4-2-%E6%9C%8D%E5%8A%A1%E7%9A%84%E7%A8%B3%E5%AE%9A%E6%80%A7%E5%92%8C%E6%80%A7%E8%83%BD%E8%A6%81%E6%B1%82"><span class="toc-nav-text">4.2 服务的稳定性和性能要求</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://lemonshi.github.io/ssr_1/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', '/css/images/error_icon.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== '/css/images/error_icon.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2024 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    <!-- Theme by <a target="_blank" rel="noopener" href="https://github.com/yanm1ng">yanm1ng</a> -->
+    
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      hljs.configure({useBR: true});
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>
