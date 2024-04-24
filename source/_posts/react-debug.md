@@ -6,16 +6,17 @@ tags: [React, Debug]
 
 ## 1. 基础环境准备
 
-**源码下载：**
+**源码下载**
 
 ```bash
 git clone https://github.com/facebook/react.git
 ```
 
-**依赖安装：**
+**依赖安装 & 选择版本**
 
 ```bash
 cd react
+git checkout v18.2.0
 yarn install
 ```
 
@@ -26,47 +27,12 @@ yarn install
 ```json
 {
   "scripts": {
-    "build": "node ./scripts/rollup/build-all-release-channels.js"
+    "build": "node ./scripts/rollup/build.js"
   }
 }
 ```
 
-### 2.1 build-all-release-channels
-
-```js
-function buildForChannel(channel, nodeTotal, nodeIndex) {
-  const { status } = spawnSync(
-    'node',
-    ['./scripts/rollup/build.js', ...process.argv.slice(2)],
-    {
-      stdio: ['pipe', process.stdout, process.stderr],
-      env: {
-        ...process.env,
-        RELEASE_CHANNEL: channel,
-        CIRCLE_NODE_TOTAL: nodeTotal,
-        CIRCLE_NODE_INDEX: nodeIndex,
-      },
-    }
-  )
-
-  if (status !== 0) {
-    // Error of spawned process is already piped to this stderr
-    process.exit(status)
-  }
-}
-```
-
-**上述代码的含义**：执行 `./scripts/rollup/build.js` 文件
-
-> [`child_process.spawnSync(command[, args][, options])`](https://nodejs.cn/api/child_process.html#child_processspawnsynccommand-args-options)
->
-> - `command` `<string>` 要运行的命令。
-> - `args` `<string[]>` 字符串参数列表。
-> - `options` `<Object>`
->   - `stdio` `<string> | <Array>` 子进程的标准输入输出配置。默认值：`pipe`。
->   - `env` `<Object>` 环境变量键值对。默认值：`process.env`。
-
-## 2.2 build
+## 2.1 build
 
 ### 2.2.1 编译出 sourcemap 文件
 
@@ -87,11 +53,10 @@ function getRollupOutputOptions(
     format,
     globals,
     freeze: !isProduction,
-    interop: getRollupInteropValue,
+    interop: false,
     name: globalName,
     sourcemap: true,
     esModule: false,
-    exports: 'auto',
   }
 }
 ```
@@ -108,7 +73,6 @@ function getRollupOutputOptions(
 // Remove 'use strict' from individual source files.
 return [
   {
-    name: "remove 'use strict'",
     transform(source) {
       return source.replace(/['"]use strict["']/g, '')
     },
@@ -122,10 +86,10 @@ return [
 
 ```js
 return [
+  // License and haste headers, top-level `if` blocks.
   {
-    name: 'top-level-definitions',
     renderChunk(source) {
-      return Wrappers.wrapWithTopLevelDefinitions(
+      return Wrappers.wrapBundle(
         source,
         bundleType,
         globalName,
@@ -135,90 +99,45 @@ return [
       )
     },
   },
-  {
-    name: 'license-and-signature-header',
-    renderChunk(source) {
-      return Wrappers.wrapWithLicenseHeader(
-        source,
-        bundleType,
-        globalName,
-        filename,
-        moduleType
-      )
-    },
-  },
 ]
 ```
 
 该插件是添加一些头部的代码的，比如 `Lisence`，顶层定义等
 
-**注释 `closure`、`prettier` 和 `sizes` 插件**
+**注释 `closure` 和 `prettier` 插件**
 
 ```js
 return [
-   needsMinifiedByClosure &&
-     closure({
-       compilation_level: 'SIMPLE',
-       language_in: 'ECMASCRIPT_2020',
-       language_out:
-         bundleType === NODE_ES2015
-           ? 'ECMASCRIPT_2020'
-           : bundleType === BROWSER_SCRIPT
-           ? 'ECMASCRIPT5'
-           : 'ECMASCRIPT5_STRICT',
-       emit_use_strict:
-         bundleType !== BROWSER_SCRIPT &&
-         bundleType !== ESM_PROD &&
-         bundleType !== ESM_DEV,
-       env: 'CUSTOM',
-       warning_level: 'QUIET',
-       source_map_include_content: true,
-       use_types_for_optimization: false,
-       process_common_js_modules: false,
-       rewrite_polyfills: false,
-       inject_libraries: false,
-       allow_dynamic_import: true,
-       assume_function_wrapper: true,
-       renaming: false,
-     }),
-   needsMinifiedByClosure &&
-      // Add the whitespace back
-     prettier({
-       parser: 'flow',
-       singleQuote: false,
-       trailingComma: 'none',
-       bracketSpacing: true,
-     }),
-   Record bundle size.
-   sizes({
-     getSize: (size, gzip) => {
-       const currentSizes = Stats.currentBuildResults.bundleSizes;
-       const recordIndex = currentSizes.findIndex(
-         record =>
-           record.filename === filename && record.bundleType === bundleType
-       );
-       const index = recordIndex !== -1 ? recordIndex : currentSizes.length;
-       currentSizes[index] = {
-         filename,
-         bundleType,
-         packageName,
-         size,
-         gzip,
-       };
-     },
-   }),
+  // Apply dead code elimination and/or minification.
+  isProduction &&
+    closure(
+      Object.assign({}, closureOptions, {
+        // Don't let it create global variables in the browser.
+        // https://github.com/facebook/react/issues/10909
+        assume_function_wrapper: !isUMDBundle,
+        renaming: !shouldStayReadable,
+      })
+    ),
+  // Add the whitespace back if necessary.
+  shouldStayReadable &&
+    prettier({
+      parser: 'babel',
+      singleQuote: false,
+      trailingComma: 'none',
+      bracketSpacing: true,
+    }),
 ]
 ```
 
-该插件主要是是负责，生产环境压缩代码、prettier 格式化代码和打包后文件大小计算等
+该插件主要是是负责，生产环境压缩代码和`prettier` 格式化代码等
 
 ## 3. 创建软链
 
 ```bash
-cd build/oss-stable/react
+cd build/node_modules/react
 yarn link
 
-cd build/oss-stable/react-dom
+cd build/node_modules/react-dom
 yarn link
 ```
 
