@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+  <meta name="description" content="wu-note">
+  <meta name="keyword" content="hexo-theme, vuejs">
+  
+    <link rel="shortcut icon" href="/css/images/logo.png">
+  
+  <title>
+    
+      （wip）SSR 相关（2） | wu-note
+    
+  </title>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+  <link href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/tomorrow.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/geopattern/1.2.3/js/geopattern.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+  
+  
+  
+  
+    <!-- MathJax support START -->
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!-- MathJax support END -->
+  
+
+
+  
+  
+<meta name="generator" content="Hexo 7.1.1"></head>
+<div class="wechat-share">
+  <img src="/css/images/logo.png" />
+</div>
+  <body>
+    <header class="header fixed-header">
+  <div class="header-container">
+    <a class="home-link" href="/">
+      <div class="logo"></div>
+      <span>wu-note</span>
+    </a>
+    <ul class="right-list">
+      
+        <li class="list-item">
+          
+            <a href="/" class="item-link">Home</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/tags/" class="item-link">Tags</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/archives/" class="item-link">Archives</a>
+          
+        </li>
+      
+        <li class="list-item">
+          
+            <a href="/about/" class="item-link">About</a>
+          
+        </li>
+      
+      
+    </ul>
+    <div class="menu">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </div>
+    <div class="menu-mask">
+      <ul class="menu-list">
+        
+          <li class="menu-item">
+            
+              <a href="/" class="menu-link">Home</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/tags/" class="menu-link">Tags</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/archives/" class="menu-link">Archives</a>
+            
+          </li>
+        
+          <li class="menu-item">
+            
+              <a href="/about/" class="menu-link">About</a>
+            
+          </li>
+        
+      </ul>
+    </div>
+    
+  </div>
+</header>
+
+    <div id="article-banner">
+  <h2>（wip）SSR 相关（2）</h2>
+  <p class="post-date">2024-04-23</p>
+  <div class="arrow-down">
+    <a href="javascript:;"></a>
+  </div>
+</div>
+<main class="app-body flex-box">
+  <!-- Article START -->
+  <article class="post-article">
+    <section class="markdown-content"><h2 id="1-一个例子"><a href="#1-一个例子" class="headerlink" title="1. 一个例子"></a>1. 一个例子</h2><p>组件如下：</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span>, &#123; useState &#125; <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span></span><br><span class="line"><span class="keyword">import</span> classNames <span class="keyword">from</span> <span class="string">&#x27;classnames&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> styles <span class="keyword">from</span> <span class="string">&#x27;./App.module.css&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title class_">App</span>: <span class="title class_">React</span>.<span class="property">FC</span> = <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> [count, setCount] = <span class="title function_">useState</span>(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">p</span> <span class="attr">style</span>=<span class="string">&#123;&#123;</span> <span class="attr">color:</span> &#x27;<span class="attr">red</span>&#x27; &#125;&#125;&gt;</span>count: &#123;count&#125;<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;<span class="name">div</span> <span class="attr">className</span>=<span class="string">&#123;styles.btnWrapper&#125;</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">Button</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">text</span>=<span class="string">&quot;Increment&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">className</span>=<span class="string">&#123;styles.btn&#125;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> setCount((prev) =&gt; prev + 1)&#125;</span></span><br><span class="line"><span class="language-xml">        /&gt;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">Button</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">text</span>=<span class="string">&quot;Decrement&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">className</span>=<span class="string">&#123;styles.btn&#125;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> setCount((prev) =&gt; prev - 1)&#125;</span></span><br><span class="line"><span class="language-xml">        /&gt;</span></span><br><span class="line"><span class="language-xml">        <span class="tag">&lt;<span class="name">Button</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">text</span>=<span class="string">&quot;Reset&quot;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">className</span>=<span class="string">&#123;styles.btn&#125;</span></span></span></span><br><span class="line"><span class="tag"><span class="language-xml">          <span class="attr">onClick</span>=<span class="string">&#123;()</span> =&gt;</span> setCount(0)&#125;</span></span><br><span class="line"><span class="language-xml">        /&gt;</span></span><br><span class="line"><span class="language-xml">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="title class_">Button</span>: <span class="title class_">React</span>.<span class="property">FC</span>&lt;<span class="title class_">IButtonProps</span>&gt; = <span class="function">(<span class="params">&#123;</span></span></span><br><span class="line"><span class="params"><span class="function">  text,</span></span></span><br><span class="line"><span class="params"><span class="function">  className,</span></span></span><br><span class="line"><span class="params"><span class="function">  onClick,</span></span></span><br><span class="line"><span class="params"><span class="function">&#125;</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    <span class="language-xml"><span class="tag">&lt;<span class="name">button</span> <span class="attr">onClick</span>=<span class="string">&#123;onClick&#125;</span> <span class="attr">className</span>=<span class="string">&#123;classNames(styles.btn,</span> <span class="attr">className</span>)&#125;&gt;</span></span></span><br><span class="line"><span class="language-xml">      &#123;text&#125;</span></span><br><span class="line"><span class="language-xml">    <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>服务端渲染如下：</p>
+<figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> fs <span class="keyword">from</span> <span class="string">&#x27;fs&#x27;</span></span><br><span class="line"><span class="keyword">import</span> path <span class="keyword">from</span> <span class="string">&#x27;path&#x27;</span></span><br><span class="line"><span class="keyword">import</span> express <span class="keyword">from</span> <span class="string">&#x27;express&#x27;</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">ReactDOMServer</span> <span class="keyword">from</span> <span class="string">&#x27;react-dom/server&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">App</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;./App&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> clientDistDir = path.<span class="title function_">resolve</span>(__dirname, <span class="string">&#x27;../dist/client&#x27;</span>)</span><br><span class="line"><span class="keyword">const</span> htmlPath = path.<span class="title function_">resolve</span>(clientDistDir, <span class="string">&#x27;index.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> app = <span class="title function_">express</span>()</span><br><span class="line"></span><br><span class="line">app.<span class="title function_">get</span>(<span class="string">&#x27;/&#x27;</span>, <span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="comment">// 读取 dist/client/index.html 文件</span></span><br><span class="line">  <span class="keyword">const</span> html = fs.<span class="title function_">readFileSync</span>(htmlPath, <span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">  <span class="keyword">const</span> app = <span class="title class_">ReactDOMServer</span>.<span class="title function_">renderToString</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span></span>)</span><br><span class="line">  <span class="comment">// 将渲染后的 React HTML 插入到 div#root 中</span></span><br><span class="line">  <span class="keyword">const</span> finalHtml = html.<span class="title function_">replace</span>(</span><br><span class="line">    <span class="string">&#x27;&lt;div id=&quot;root&quot;&gt;&lt;/div&gt;&#x27;</span>,</span><br><span class="line">    <span class="string">`&lt;div id=&quot;root&quot;&gt;<span class="subst">$&#123;app&#125;</span>&lt;/div&gt;`</span></span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  res.<span class="title function_">send</span>(finalHtml)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 提供静态资源访问服务</span></span><br><span class="line">app.<span class="title function_">use</span>(express.<span class="title function_">static</span>(clientDistDir))</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">PORT</span> = process.<span class="property">env</span>.<span class="property">PORT</span> || <span class="number">3007</span></span><br><span class="line">app.<span class="title function_">listen</span>(<span class="variable constant_">PORT</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`Server is listening on port <span class="subst">$&#123;PORT&#125;</span>`</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`http://localhost:<span class="subst">$&#123;PORT&#125;</span>`</span>)</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`http://127.0.0.1:<span class="subst">$&#123;PORT&#125;</span>`</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-服务渲染流程"><a href="#2-服务渲染流程" class="headerlink" title="2. 服务渲染流程"></a>2. 服务渲染流程</h2><h3 id="2-1-服务返回"><a href="#2-1-服务返回" class="headerlink" title="2.1 服务返回"></a>2.1 服务返回</h3><p>服务端返回的 <code>HTML</code>，如下：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;zh-cn&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span></span></span><br><span class="line"><span class="tag">      <span class="attr">name</span>=<span class="string">&quot;viewport&quot;</span></span></span><br><span class="line"><span class="tag">      <span class="attr">content</span>=<span class="string">&quot;width=device-width,initial-scale=1,user-scalable=no,minimum-scale=1,maximum-scale=1,minimal-ui,viewport-fit=cover&quot;</span></span></span><br><span class="line"><span class="tag">    /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">defer</span>=<span class="string">&quot;defer&quot;</span> <span class="attr">src</span>=<span class="string">&quot;main.c0c45135.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">href</span>=<span class="string">&quot;assets/css/c0c45135.css&quot;</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;root&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">p</span> <span class="attr">style</span>=<span class="string">&quot;color:red&quot;</span>&gt;</span></span><br><span class="line">          count:</span><br><span class="line">          <span class="comment">&lt;!-- --&gt;</span></span><br><span class="line">          0</span><br><span class="line">        <span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;cVChZBXm__xXjk7faER8&quot;</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;wEy8fdhueJs2LXJ5e4Td Ntm6Y_jZKK1UZ15YcDml&quot;</span>&gt;</span></span><br><span class="line">            Increment</span><br><span class="line">          <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;wEy8fdhueJs2LXJ5e4Td Ntm6Y_jZKK1UZ15YcDml&quot;</span>&gt;</span></span><br><span class="line">            Decrement</span><br><span class="line">          <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">button</span> <span class="attr">class</span>=<span class="string">&quot;wEy8fdhueJs2LXJ5e4Td Ntm6Y_jZKK1UZ15YcDml&quot;</span>&gt;</span></span><br><span class="line">            Reset</span><br><span class="line">          <span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-浏览器再次渲染"><a href="#2-2-浏览器再次渲染" class="headerlink" title="2.2 浏览器再次渲染"></a>2.2 浏览器再次渲染</h3><figure class="highlight tsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">React</span> <span class="keyword">from</span> <span class="string">&#x27;react&#x27;</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">ReactDOM</span> <span class="keyword">from</span> <span class="string">&#x27;react-dom&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">App</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;./App&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title class_">ReactDOM</span>.<span class="title function_">hydrate</span>(<span class="language-xml"><span class="tag">&lt;<span class="name">App</span> /&gt;</span></span>, <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;root&#x27;</span>))</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong>：这里执行的不是 <code>render</code> 的 <code>api</code>，而是 <code>hydrate</code> 的 <code>api</code>。</p>
+<p>因为浏览器接收到 <code>HTML</code> 就会把它渲染出来，这时候已经有标签了，只需要把它和组件关联之后，就可以更新和绑定事件了（直接关联已有 <code>DOM</code> 标签，避免没必要的渲染）。</p>
+</blockquote>
+<h3 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h3><p>整个 <code>SSR</code> 的流程，如下：</p>
+<p>服务端渲染组件为 <code>string</code>，拼接成 <code>HTML</code> 返回，浏览器渲染出返回的 <code>HTML</code>，然后执行 <code>hydrate</code>，把渲染和已有的 <code>HTML</code> 标签关联。</p>
+<h2 id="3-renderToString"><a href="#3-renderToString" class="headerlink" title="3. renderToString"></a>3. renderToString</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">renderToString</span>(<span class="params"></span></span><br><span class="line"><span class="params">  children: ReactNodeList,</span></span><br><span class="line"><span class="params">  options?: ServerOptions</span></span><br><span class="line"><span class="params"></span>): string &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">renderToStringImpl</span>(</span><br><span class="line">    children,</span><br><span class="line">    options,</span><br><span class="line">    <span class="literal">false</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>本质上调用的是 <code>renderToStringImpl</code> 方法</p>
+<h3 id="3-1-renderToStringImpl"><a href="#3-1-renderToStringImpl" class="headerlink" title="3.1 renderToStringImpl"></a>3.1 renderToStringImpl</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">renderToStringImpl</span>(<span class="params"></span></span><br><span class="line"><span class="params">  children: ReactNodeList,</span></span><br><span class="line"><span class="params">  options: <span class="keyword">void</span> | ServerOptions,</span></span><br><span class="line"><span class="params">  generateStaticMarkup: boolean,</span></span><br><span class="line"><span class="params">  abortReason: string</span></span><br><span class="line"><span class="params"></span>): string &#123;</span><br><span class="line">  <span class="keyword">let</span> didFatal = <span class="literal">false</span></span><br><span class="line">  <span class="keyword">let</span> fatalError = <span class="literal">null</span></span><br><span class="line">  <span class="keyword">let</span> result = <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="keyword">const</span> destination = &#123;</span><br><span class="line">    <span class="comment">// $FlowFixMe[missing-local-annot]</span></span><br><span class="line">    <span class="title function_">push</span>(<span class="params">chunk</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (chunk !== <span class="literal">null</span>) &#123;</span><br><span class="line">        result += chunk</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// $FlowFixMe[missing-local-annot]</span></span><br><span class="line">    <span class="title function_">destroy</span>(<span class="params">error</span>) &#123;</span><br><span class="line">      didFatal = <span class="literal">true</span></span><br><span class="line">      fatalError = error</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> readyToStream = <span class="literal">false</span></span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">onShellReady</span>(<span class="params"></span>) &#123;</span><br><span class="line">    readyToStream = <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> resumableState = <span class="title function_">createResumableState</span>(</span><br><span class="line">    options ? options.<span class="property">identifierPrefix</span> : <span class="literal">undefined</span>,</span><br><span class="line">    <span class="literal">undefined</span></span><br><span class="line">  )</span><br><span class="line">  <span class="keyword">const</span> request = <span class="title function_">createRequest</span>(</span><br><span class="line">    children,</span><br><span class="line">    resumableState,</span><br><span class="line">    <span class="title function_">createRenderState</span>(resumableState, generateStaticMarkup),</span><br><span class="line">    <span class="title function_">createRootFormatContext</span>(),</span><br><span class="line">    <span class="title class_">Infinity</span>,</span><br><span class="line">    onError,</span><br><span class="line">    <span class="literal">undefined</span>,</span><br><span class="line">    onShellReady,</span><br><span class="line">    <span class="literal">undefined</span>,</span><br><span class="line">    <span class="literal">undefined</span>,</span><br><span class="line">    <span class="literal">undefined</span></span><br><span class="line">  )</span><br><span class="line">  <span class="title function_">startWork</span>(request)</span><br><span class="line">  <span class="comment">// If anything suspended and is still pending, we&#x27;ll abort it before writing.</span></span><br><span class="line">  <span class="comment">// That way we write only client-rendered boundaries from the start.</span></span><br><span class="line">  <span class="title function_">abort</span>(request, abortReason)</span><br><span class="line">  <span class="title function_">startFlowing</span>(request, destination)</span><br><span class="line">  <span class="keyword">if</span> (didFatal &amp;&amp; fatalError !== abortReason) &#123;</span><br><span class="line">    <span class="keyword">throw</span> fatalError</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (!readyToStream) &#123;</span><br><span class="line">    <span class="comment">// Note: This error message is the one we use on the client. It doesn&#x27;t</span></span><br><span class="line">    <span class="comment">// really make sense here. But this is the legacy server renderer, anyway.</span></span><br><span class="line">    <span class="comment">// We&#x27;re going to delete it soon.</span></span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(</span><br><span class="line">      <span class="string">&#x27;A component suspended while responding to synchronous input. This &#x27;</span> +</span><br><span class="line">        <span class="string">&#x27;will cause the UI to be replaced with a loading indicator. To fix, &#x27;</span> +</span><br><span class="line">        <span class="string">&#x27;updates that suspend should be wrapped with startTransition.&#x27;</span></span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</section>
+    <!-- Tags START -->
+    
+      <div class="tags">
+        <span>Tags:</span>
+        
+  <a href="/tags#React" >
+    <span class="tag-code">React</span>
+  </a>
+
+  <a href="/tags#SSR" >
+    <span class="tag-code">SSR</span>
+  </a>
+
+      </div>
+    
+    <!-- Tags END -->
+    <!-- NAV START -->
+    
+  <div class="nav-container">
+    <!-- reverse left and right to put prev and next in a more logic postition -->
+    
+      <a class="nav-left" href="/ssr_1/">
+        <span class="nav-arrow">← </span>
+        
+          SSR 相关（1）
+        
+      </a>
+    
+    
+      <a class="nav-right" href="/react-debug/">
+        
+          React 源码调试（1）
+        
+        <span class="nav-arrow"> →</span>
+      </a>
+    
+  </div>
+
+    <!-- NAV END -->
+    <!-- 打赏 START -->
+    
+    <!-- 打赏 END -->
+    <!-- 二维码 START -->
+    
+    <!-- 二维码 END -->
+    
+      <!-- Utterances START -->
+      <div id="utterances"></div>
+      <script src="https://utteranc.es/client.js"
+        repo=""
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async></script>    
+      <!-- Utterances END -->
+    
+  </article>
+  <!-- Article END -->
+  <!-- Catalog START -->
+  
+    <aside class="catalog-container">
+  <div class="toc-main">
+    <strong class="toc-title">Catalog</strong>
+    
+      <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="toc-nav-text">1. 一个例子</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#2-%E6%9C%8D%E5%8A%A1%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B"><span class="toc-nav-text">2. 服务渲染流程</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-1-%E6%9C%8D%E5%8A%A1%E8%BF%94%E5%9B%9E"><span class="toc-nav-text">2.1 服务返回</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-2-%E6%B5%8F%E8%A7%88%E5%99%A8%E5%86%8D%E6%AC%A1%E6%B8%B2%E6%9F%93"><span class="toc-nav-text">2.2 浏览器再次渲染</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#2-3-%E6%80%BB%E7%BB%93"><span class="toc-nav-text">2.3 总结</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#3-renderToString"><span class="toc-nav-text">3. renderToString</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#3-1-renderToStringImpl"><span class="toc-nav-text">3.1 renderToStringImpl</span></a></li></ol></li></ol>
+    
+  </div>
+</aside>
+  
+  <!-- Catalog END -->
+</main>
+
+<script>
+  (function () {
+    var url = 'https://lemonshi.github.io/ssr_2/';
+    var banner = ''
+    if (banner !== '' && banner !== 'undefined' && banner !== 'null') {
+      $('#article-banner').css({
+        'background-image': 'url(' + banner + ')'
+      })
+    } else {
+      $('#article-banner').geopattern(url)
+    }
+    $('.header').removeClass('fixed-header')
+
+    // error image
+    $(".markdown-content img").on('error', function() {
+      $(this).attr('src', '/css/images/error_icon.png')
+      $(this).css({
+        'cursor': 'default'
+      })
+    })
+
+    // zoom image
+    $(".markdown-content img").on('click', function() {
+      var src = $(this).attr('src')
+      if (src !== '/css/images/error_icon.png') {
+        var imageW = $(this).width()
+        var imageH = $(this).height()
+
+        var zoom = ($(window).width() * 0.95 / imageW).toFixed(2)
+        zoom = zoom < 1 ? 1 : zoom
+        zoom = zoom > 2 ? 2 : zoom
+        var transY = (($(window).height() - imageH) / 2).toFixed(2)
+
+        $('body').append('<div class="image-view-wrap"><div class="image-view-inner"><img src="'+ src +'" /></div></div>')
+        $('.image-view-wrap').addClass('wrap-active')
+        $('.image-view-wrap img').css({
+          'width': `${imageW}`,
+          'transform': `translate3d(0, ${transY}px, 0) scale3d(${zoom}, ${zoom}, 1)`
+        })
+        $('html').css('overflow', 'hidden')
+
+        $('.image-view-wrap').on('click', function() {
+          $(this).remove()
+          $('html').attr('style', '')
+        })
+      }
+    })
+  })();
+</script>
+
+
+
+
+
+
+
+    <div class="scroll-top">
+  <span class="arrow-icon"></span>
+</div>
+    <footer class="app-footer">
+  <p class="copyright">
+    &copy; 2024 | Proudly powered by <a href="https://hexo.io" target="_blank">Hexo</a>
+    <br>
+    <!-- Theme by <a target="_blank" rel="noopener" href="https://github.com/yanm1ng">yanm1ng</a> -->
+    
+  </p>
+</footer>
+
+<script>
+  function async(u, c) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+</script>
+<script>
+  async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+    FastClick.attach(document.body);
+  })
+</script>
+
+<script>
+  var hasLine = 'true';
+  async("//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js", function(){
+    $('figure pre').each(function(i, block) {
+      var figure = $(this).parents('figure');
+      if (hasLine === 'false') {
+        figure.find('.gutter').hide();
+      }
+      hljs.configure({useBR: true});
+      var lang = figure.attr('class').split(' ')[1] || 'code';
+      var codeHtml = $(this).html();
+      var codeTag = document.createElement('code');
+      codeTag.className = lang;
+      codeTag.innerHTML = codeHtml;
+      $(this).attr('class', '').empty().html(codeTag);
+      figure.attr('data-lang', lang.toUpperCase());
+      hljs.highlightBlock(block);
+    });
+  })
+</script>
+<!-- Baidu Tongji -->
+
+
+<script src="/js/script.js"></script>
+
+
+  </body>
+</html>

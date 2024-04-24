@@ -134,6 +134,62 @@
   
     <article class="article-card">
       <h2 class="article-head">
+        <a href="/react-debug/">React 源码调试（1）</a>
+      </h2>
+      <p class="article-date">2024年4月24日</p>
+      
+        
+  <a href="/tags#React" >
+    <span class="tag-code">React</span>
+  </a>
+
+  <a href="/tags#Debug" >
+    <span class="tag-code">Debug</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          1. 基础环境准备源码下载：
+1git clone https://github.com/facebook/react.git
+
+依赖安装：
+12cd reactyarn install
+
+2. 源码编译查看 package.json 文件相关命令：
+12345&#123;  &quot;s ...
+        
+      </div>
+      <a class="more" href="/react-debug/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
+        <a href="/ssr_2/">（wip）SSR 相关（2）</a>
+      </h2>
+      <p class="article-date">2024年4月23日</p>
+      
+        
+  <a href="/tags#React" >
+    <span class="tag-code">React</span>
+  </a>
+
+  <a href="/tags#SSR" >
+    <span class="tag-code">SSR</span>
+  </a>
+
+      
+      <div class="article-summary">
+        
+          1. 一个例子组件如下：
+12345678910111213141516171819202122232425262728293031323334353637383940414243import React, &#123; useState &#125; from &#x27;react&#x ...
+        
+      </div>
+      <a class="more" href="/ssr_2/">Read more</a>
+    </article>
+  
+    <article class="article-card">
+      <h2 class="article-head">
         <a href="/ssr_1/">SSR 相关（1）</a>
       </h2>
       <p class="article-date">2024年4月22日</p>
@@ -311,49 +367,6 @@ ReactElement 对象的数据结构如下：
         
       </div>
       <a class="more" href="/react-hook_2/">Read more</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/react-hook_1/">React Hook（1）</a>
-      </h2>
-      <p class="article-date">2024年4月1日</p>
-      
-        
-  <a href="/tags#React" >
-    <span class="tag-code">React</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          1. 背景1.1 什么需要 Hook？
-组件间的状态难以复用： 在 hook 出现之前的状态复用有 Mixins、props 和 HOC（高阶组件）。其中，props、HOC（高阶组件）虽然能解决状态复用问题，但是组件会形成“嵌套地狱”。而 Minxins 存在以下问题：可能会相互依赖，相互 ...
-        
-      </div>
-      <a class="more" href="/react-hook_1/">Read more</a>
-    </article>
-  
-    <article class="article-card">
-      <h2 class="article-head">
-        <a href="/react-event_2/">React 事件机制（2）</a>
-      </h2>
-      <p class="article-date">2024年4月1日</p>
-      
-        
-  <a href="/tags#React" >
-    <span class="tag-code">React</span>
-  </a>
-
-      
-      <div class="article-summary">
-        
-          1. 事件注册事件注册是在顶层自执行的，在 React 自身引入文件的时候调用的。
-注册事件（React 将同种类型的事件放在一个插件中）：
-12345678910111213import * as BeforeInputEventPlugin from &#x27;./plugins/Be ...
-        
-      </div>
-      <a class="more" href="/react-event_2/">Read more</a>
     </article>
   
 
