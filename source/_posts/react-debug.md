@@ -129,7 +129,7 @@ return [
 ]
 ```
 
-该插件主要是是负责，生产环境压缩代码和`prettier` 格式化代码等
+该插件主要是是负责，生产环境压缩代码和 `prettier` 格式化代码等
 
 ## 3. 创建软链
 
@@ -141,4 +141,12 @@ cd build/node_modules/react-dom
 yarn link
 ```
 
-完成软链之后，就可以正常本地调试了
+## 4. 链接本地
+
+```bash
+yarn link react
+
+yarn link react-dom
+```
+
+这步完成之后，就可以调试 `react` 源码
